@@ -84,7 +84,8 @@ To keep the repository maintainable and professional, follow these rules:
 ### Testing & Stability
 
 * The `main` branch must **always compile and run** on the emulator/device.
-* Do not merge incomplete or broken features directly into `main`.
+* Do not merge incomplete or broken features directly into `main`. 
+* If the branch does not run, save your work, but do not merge.
 
 ---
 
