@@ -15,10 +15,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.runtime.collectAsState
 import com.cse.tamagotchi.ui.theme.TamagotchiTheme
 import com.cse.tamagotchi.ui.HomeScreen
+import com.cse.tamagotchi.ui.TaskScreen
 import com.cse.tamagotchi.viewmodel.HomeViewModel
+import com.cse.tamagotchi.viewmodel.TaskViewModel
 
 class MainActivity : ComponentActivity() {
     private val homeViewModel: HomeViewModel by viewModels()
+    val taskViewModel: TaskViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +30,10 @@ class MainActivity : ComponentActivity() {
             HomeScreen(
                 coins = coins,
                 onFeedClick = { homeViewModel.addCoins(10) }
+            )
+            TaskScreen(
+                tasks = taskViewModel.tasks.collectAsState().value,
+                onTaskClick = { taskViewModel.completeTask(it)}
             )
         }
     }
