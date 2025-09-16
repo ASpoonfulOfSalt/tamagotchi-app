@@ -1,25 +1,33 @@
-// ui/MainScreen.kt
+/**
+ * MainScreen is the root composable that ties together:
+ * - TopBar (persistent app header)
+ * - BottomNavBar (navigation between pages)
+ * - HorizontalPager (swipeable pages: Home, Tasks, Store)
+ *
+ * This should stay fairly "lightweight": it only wires components together.
+ * Keep page-specific UI logic in their own files.
+ */
+
 package com.cse.tamagotchi.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
+
+import com.cse.tamagotchi.ui.navigation.HabitGotchiBottomNav
+import com.cse.tamagotchi.ui.navigation.HabitGotchiTopBar
+import com.cse.tamagotchi.ui.navigation.PagerContent
+import com.cse.tamagotchi.model.Task
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     coins: Int,
-    tasks: List<com.cse.tamagotchi.model.Task>,
+    tasks: List<Task>,
     onFeedClick: () -> Unit,
     onTaskClick: (String) -> Unit
 ) {
@@ -28,46 +36,19 @@ fun MainScreen(
     val scope = rememberCoroutineScope()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("HabitGotchi") },
-                actions = {
-                    Text("Coins: $coins", style = MaterialTheme.typography.bodyLarge)
-                }
-            )
-        },
-        bottomBar = {
-            NavigationBar {
-                pages.forEachIndexed { index, label ->
-                    NavigationBarItem(
-                        selected = pagerState.currentPage == index,
-                        onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                        label = { Text(label) },
-                        icon = {
-                            when (label) {
-                                "Home" -> Icon(Icons.Default.Home, contentDescription = label)
-                                "Tasks" -> Icon(Icons.Default.List, contentDescription = label)
-                                "Store" -> Icon(Icons.Default.ShoppingCart, contentDescription = label)
-                                else -> Icon(Icons.Default.Home, contentDescription = label)
-                            }
-                        }
-                    )
-                }
-            }
-        }
+        topBar = { HabitGotchiTopBar(coins) },
+        bottomBar = { HabitGotchiBottomNav(pages, pagerState, scope) }
     ) { innerPadding ->
-        HorizontalPager(
-            state = pagerState,
+        PagerContent(
+            pagerState = pagerState,
+            coins = coins,
+            tasks = tasks,
+            onFeedClick = onFeedClick,
+            onTaskClick = onTaskClick,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
             pageSpacing = 0.dp
-        ) { page ->
-            when (page) {
-                0 -> HomeScreen(coins = coins, onFeedClick = onFeedClick)
-                1 -> TaskScreen(tasks = tasks, onTaskClick = onTaskClick)
-//                2 -> StoreScreen() // Placeholder for now
-            }
-        }
+        )
     }
 }

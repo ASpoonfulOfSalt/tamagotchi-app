@@ -1,4 +1,11 @@
-// ui/TaskScreen.kt
+/**
+ * Displays a list of tasks.
+ * Each row shows the task title and a checkbox.
+ *
+ * `onTaskClick` is triggered when the row or checkbox is clicked.
+ * This pushes the task ID back to the ViewModel for state updates.
+ */
+
 package com.cse.tamagotchi.ui
 
 import androidx.compose.foundation.clickable
