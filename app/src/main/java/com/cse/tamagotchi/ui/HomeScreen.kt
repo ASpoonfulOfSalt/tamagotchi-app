@@ -1,4 +1,14 @@
-// ui/HomeScreen.kt
+/**
+ * Placeholder home screen.
+ * Right now it just shows:
+ * - Title ("HabitGotchi")
+ * - Coin count
+ * - Button to "feed" the tamagotchi (adds coins)
+ *
+ * In the future, replace this with a tamagotchi sprite
+ * and animations.
+ */
+
 package com.cse.tamagotchi.ui
 
 import androidx.compose.foundation.layout.*
@@ -29,5 +39,4 @@ fun HomeScreen(
         }
     }
 }
-
 
