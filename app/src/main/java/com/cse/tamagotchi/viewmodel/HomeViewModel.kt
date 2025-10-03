@@ -9,7 +9,7 @@ class HomeViewModel : ViewModel() {
     private val _coins = MutableStateFlow(0)
     val coins: StateFlow<Int> = _coins
 
-    fun addCoins(amount: Int) {
-        _coins.value += amount
+    fun addCoins(amount: Int, storeViewModel: StoreViewModel) {
+        storeViewModel.addCoins(amount)
     }
 }
