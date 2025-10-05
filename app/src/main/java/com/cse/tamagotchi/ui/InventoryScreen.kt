@@ -17,8 +17,7 @@ import com.cse.tamagotchi.viewmodel.StoreViewModel
 
 @Composable
 fun InventoryScreen(
-    viewModel: StoreViewModel,
-    paddingValues: PaddingValues
+    viewModel: StoreViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val inventory = uiState.userInventory
@@ -26,8 +25,7 @@ fun InventoryScreen(
     if (inventory.isEmpty()) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Text("Your inventory is empty.")
@@ -35,7 +33,6 @@ fun InventoryScreen(
     } else {
         LazyColumn(
             modifier = Modifier
-                .padding(paddingValues)
                 .fillMaxSize()
         ) {
             items(inventory) { item ->

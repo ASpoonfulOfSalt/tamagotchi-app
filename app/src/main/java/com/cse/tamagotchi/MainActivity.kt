@@ -4,6 +4,10 @@ import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backpack
 import androidx.compose.material.icons.filled.Home
@@ -20,21 +24,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.cse.tamagotchi.ui.HomeScreen
 import com.cse.tamagotchi.ui.InventoryScreen
 import com.cse.tamagotchi.ui.StoreScreen
 import com.cse.tamagotchi.ui.theme.TamagotchiTheme
-import com.cse.tamagotchi.viewmodel.HomeViewModel
 import com.cse.tamagotchi.viewmodel.StoreViewModel
 import com.cse.tamagotchi.viewmodel.StoreViewModelFactory
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,17 +48,17 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainApp() {
-    val navController = rememberNavController()
     val application = LocalContext.current.applicationContext as Application
-    val homeViewModel: HomeViewModel = viewModel()
     val storeViewModel: StoreViewModel = viewModel(factory = StoreViewModelFactory(application))
 
     val storeUiState by storeViewModel.uiState.collectAsState()
     val userCoins = storeUiState.userCoins
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val pagerState = rememberPagerState(pageCount = { 3 })
 
     LaunchedEffect(storeUiState.purchaseMessage) {
         storeUiState.purchaseMessage?.let {
@@ -68,73 +69,48 @@ fun MainApp() {
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        bottomBar = { AppBottomNavigation(navController = navController) }
+        bottomBar = { AppBottomNavigation(pagerState = pagerState) }
     ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = "home"
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.padding(innerPadding)
         ) {
-            composable("home") {
-                HomeScreen(
+            when (it) {
+                0 -> HomeScreen(
                     coins = userCoins,
                     onFeedClick = { storeViewModel.addCoins(10) }
                 )
-            }
-            composable("store") {
-                StoreScreen(
-                    viewModel = storeViewModel,
-                    paddingValues = innerPadding
-                )
-            }
-            composable("inventory") {
-                InventoryScreen(
-                    viewModel = storeViewModel,
-                    paddingValues = innerPadding
-                )
+                1 -> StoreScreen(viewModel = storeViewModel)
+                2 -> InventoryScreen(viewModel = storeViewModel)
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AppBottomNavigation(navController: NavHostController) {
+fun AppBottomNavigation(pagerState: androidx.compose.foundation.pager.PagerState) {
+    val scope = rememberCoroutineScope()
     NavigationBar {
-        val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
             label = { Text("Home") },
-            selected = currentRoute == "home",
-            onClick = {
-                navController.navigate("home") {
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            }
+            selected = pagerState.currentPage == 0,
+            onClick = { scope.launch { pagerState.animateScrollToPage(0) } }
         )
 
         NavigationBarItem(
             icon = { Icon(Icons.Filled.ShoppingCart, contentDescription = "Store") },
             label = { Text("Store") },
-            selected = currentRoute == "store",
-            onClick = {
-                navController.navigate("store") {
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            }
+            selected = pagerState.currentPage == 1,
+            onClick = { scope.launch { pagerState.animateScrollToPage(1) } }
         )
 
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Backpack, contentDescription = "Inventory") },
             label = { Text("Inventory") },
-            selected = currentRoute == "inventory",
-            onClick = {
-                navController.navigate("inventory") {
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            }
+            selected = pagerState.currentPage == 2,
+            onClick = { scope.launch { pagerState.animateScrollToPage(2) } }
         )
     }
 }

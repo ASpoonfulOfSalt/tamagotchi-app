@@ -17,15 +17,13 @@ import com.cse.tamagotchi.viewmodel.StoreViewModel
 @Composable
 fun StoreScreen(
     modifier: Modifier = Modifier,
-    viewModel: StoreViewModel,
-    paddingValues: PaddingValues
+    viewModel: StoreViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(paddingValues)
             .padding(16.dp)
     ) {
         StoreHeader(coins = uiState.userCoins)
