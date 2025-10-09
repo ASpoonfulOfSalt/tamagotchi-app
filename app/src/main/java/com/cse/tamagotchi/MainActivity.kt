@@ -11,6 +11,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backpack
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -32,9 +33,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cse.tamagotchi.ui.HomeScreen
 import com.cse.tamagotchi.ui.InventoryScreen
 import com.cse.tamagotchi.ui.StoreScreen
+import com.cse.tamagotchi.ui.TaskScreen
+import com.cse.tamagotchi.ui.navigation.HabitGotchiTopBar
 import com.cse.tamagotchi.ui.theme.TamagotchiTheme
 import com.cse.tamagotchi.viewmodel.StoreViewModel
 import com.cse.tamagotchi.viewmodel.StoreViewModelFactory
+import com.cse.tamagotchi.viewmodel.TaskViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -52,13 +56,17 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainApp() {
     val application = LocalContext.current.applicationContext as Application
-    val storeViewModel: StoreViewModel = viewModel(factory = StoreViewModelFactory(application))
 
+    val storeViewModel: StoreViewModel = viewModel(factory = StoreViewModelFactory(application))
     val storeUiState by storeViewModel.uiState.collectAsState()
     val userCoins = storeUiState.userCoins
 
+    val taskViewModel: TaskViewModel = viewModel()
+    val tasks by taskViewModel.tasks.collectAsState(initial = emptyList())
+
     val snackbarHostState = remember { SnackbarHostState() }
-    val pagerState = rememberPagerState(pageCount = { 3 })
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 4 })
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(storeUiState.purchaseMessage) {
         storeUiState.purchaseMessage?.let {
@@ -68,6 +76,7 @@ fun MainApp() {
     }
 
     Scaffold(
+        topBar = { HabitGotchiTopBar(coins = userCoins) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = { AppBottomNavigation(pagerState = pagerState) }
     ) { innerPadding ->
@@ -80,8 +89,12 @@ fun MainApp() {
                     coins = userCoins,
                     onFeedClick = { storeViewModel.addCoins(10) }
                 )
-                1 -> StoreScreen(viewModel = storeViewModel)
-                2 -> InventoryScreen(viewModel = storeViewModel)
+                1 -> TaskScreen(
+                    tasks = tasks,
+                    onTaskClick = { taskId -> taskViewModel.completeTask(taskId) }
+                )
+                2 -> StoreScreen(viewModel = storeViewModel)
+                3 -> InventoryScreen(viewModel = storeViewModel)
             }
         }
     }
@@ -100,17 +113,24 @@ fun AppBottomNavigation(pagerState: androidx.compose.foundation.pager.PagerState
         )
 
         NavigationBarItem(
-            icon = { Icon(Icons.Filled.ShoppingCart, contentDescription = "Store") },
-            label = { Text("Store") },
+            icon = { Icon(Icons.Filled.List, contentDescription = "Tasks") },
+            label = { Text("Tasks") },
             selected = pagerState.currentPage == 1,
             onClick = { scope.launch { pagerState.animateScrollToPage(1) } }
         )
 
         NavigationBarItem(
-            icon = { Icon(Icons.Filled.Backpack, contentDescription = "Inventory") },
-            label = { Text("Inventory") },
+            icon = { Icon(Icons.Filled.ShoppingCart, contentDescription = "Store") },
+            label = { Text("Store") },
             selected = pagerState.currentPage == 2,
             onClick = { scope.launch { pagerState.animateScrollToPage(2) } }
+        )
+
+        NavigationBarItem(
+            icon = { Icon(Icons.Filled.Backpack, contentDescription = "Inventory") },
+            label = { Text("Inventory") },
+            selected = pagerState.currentPage == 3,
+            onClick = { scope.launch { pagerState.animateScrollToPage(3) } }
         )
     }
 }
