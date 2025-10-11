@@ -6,10 +6,5 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class HomeViewModel : ViewModel() {
-    private val _coins = MutableStateFlow(0)
-    val coins: StateFlow<Int> = _coins
-
-    fun addCoins(amount: Int, storeViewModel: StoreViewModel) {
-        storeViewModel.addCoins(amount)
-    }
+    // TODO: Manage pet state (hunger, water, happiness, xp, etc.)
 }
