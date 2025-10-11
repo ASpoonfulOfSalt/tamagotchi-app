@@ -25,16 +25,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cse.tamagotchi.data.AppDatabase
+import com.cse.tamagotchi.repository.UserPreferencesRepository
 import com.cse.tamagotchi.ui.HomeScreen
 import com.cse.tamagotchi.ui.InventoryScreen
+import com.cse.tamagotchi.ui.SettingsScreen
 import com.cse.tamagotchi.ui.StoreScreen
 import com.cse.tamagotchi.ui.TaskScreen
 import com.cse.tamagotchi.viewmodel.HomeViewModel
+import com.cse.tamagotchi.viewmodel.SettingsViewModel
 import com.cse.tamagotchi.viewmodel.StoreViewModel
 import com.cse.tamagotchi.viewmodel.StoreViewModelFactory
 import com.cse.tamagotchi.viewmodel.TaskViewModel
@@ -46,10 +51,14 @@ fun AppNavRoot() {
     val pagerState = rememberPagerState(initialPage = 2, pageCount = { 5 })
     val scope = rememberCoroutineScope()
     val activity = LocalContext.current as? Activity
+    val application = LocalContext.current.applicationContext as Application
+    val database = AppDatabase.getDatabase(application)
+    val userPrefs = UserPreferencesRepository(application)
 
     // Create VMs here with factories (for now, keep store only)
     val storeViewModel: StoreViewModel = viewModel(factory = StoreViewModelFactory(LocalContext.current.applicationContext as Application))
     val taskViewModel: TaskViewModel = viewModel()
+    val settingsViewModel = remember { SettingsViewModel(userPrefs, database) }
     // val homeViewModel: HomeViewModel = viewModel()
     // Settings VM will come later
 
@@ -66,7 +75,7 @@ fun AppNavRoot() {
         topBar = {
             val uiState by storeViewModel.uiState.collectAsState()
             HabitGotchiTopBar(uiState.userCoins)
-                 },
+        },
         bottomBar = { HabitGotchiBottomNav(pagerState, scope) }
     ) { innerPadding ->
         HorizontalPager(
@@ -78,18 +87,8 @@ fun AppNavRoot() {
                 1 -> InventoryScreen(viewModel = storeViewModel)
                 2 -> HomeScreen(viewModel = storeViewModel)
                 3 -> TaskScreen(viewModel = taskViewModel)
-                4 -> SettingsScreen() // stub for now
+                4 -> SettingsScreen(viewModel = settingsViewModel)
             }
         }
-    }
-}
-
-@Composable
-fun SettingsScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Settings screen coming soon!")
     }
 }
