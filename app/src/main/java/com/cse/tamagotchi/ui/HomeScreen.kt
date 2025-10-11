@@ -5,13 +5,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.cse.tamagotchi.viewmodel.StoreViewModel
+
 @Composable
-fun HomeScreen(
-    coins: Int,
-    onFeedClick: () -> Unit
-) {
+fun HomeScreen(viewModel: StoreViewModel) {
+    val uiState by viewModel.uiState.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -21,9 +20,9 @@ fun HomeScreen(
     ) {
         Text("HabitGotchi 🐾", style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(16.dp))
-        Text("Coins: $coins", style = MaterialTheme.typography.bodyLarge)
+        Text("Coins: ${uiState.userCoins}", style = MaterialTheme.typography.bodyLarge)
         Spacer(Modifier.height(16.dp))
-        Button(onClick = onFeedClick) {
+        Button(onClick = { viewModel.addCoins(10) }) {
             Text("Feed Tamagotchi")
         }
     }
