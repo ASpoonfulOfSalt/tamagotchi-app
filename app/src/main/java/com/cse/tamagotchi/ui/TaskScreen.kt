@@ -15,15 +15,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.cse.tamagotchi.model.Task
+import com.cse.tamagotchi.viewmodel.TaskViewModel
 
 @Composable
-fun TaskScreen(
-    tasks: List<Task>,
-    onTaskClick: (String) -> Unit
-) {
+fun TaskScreen(viewModel: TaskViewModel) {
+    val tasks by viewModel.tasks.collectAsState(initial = emptyList())
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp)
@@ -33,15 +33,16 @@ fun TaskScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .clickable { onTaskClick(task.id) },
+                    .clickable { viewModel.completeTask(task.id) },
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(task.title)
                 Checkbox(
                     checked = task.isCompleted,
-                    onCheckedChange = { onTaskClick(task.id) }
+                    onCheckedChange = { viewModel.completeTask(task.id) }
                 )
             }
         }
     }
 }
+
