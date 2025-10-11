@@ -31,4 +31,8 @@ class StoreRepository(private val storeItemDao: StoreItemDao) {
     suspend fun purchaseItem(item: StoreItem) {
         storeItemDao.upsert(item)
     }
+
+    suspend fun clearInventory() {
+        storeItemDao.clearAllInventory()
+    }
 }

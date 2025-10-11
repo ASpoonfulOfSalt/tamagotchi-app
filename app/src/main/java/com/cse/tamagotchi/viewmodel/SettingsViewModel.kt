@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cse.tamagotchi.repository.UserPreferencesRepository
 import com.cse.tamagotchi.data.AppDatabase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SettingsViewModel(
     private val userPrefs: UserPreferencesRepository,
@@ -28,7 +30,9 @@ class SettingsViewModel(
             userPrefs.clearAllData()
 
             // Clear Room data
-            database.clearAllTables()
+            withContext(Dispatchers.IO) {
+                database.storeItemDao().clearAllInventory()
+            }
         }
     }
 }
