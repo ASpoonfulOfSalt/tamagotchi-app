@@ -10,7 +10,6 @@
  */
 package com.cse.tamagotchi.ui.navigation
 
-
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
@@ -18,29 +17,30 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.material.icons.filled.Backpack
+import androidx.compose.material.icons.filled.Settings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun HabitGotchiBottomNav(
-    pages: List<String>,
     pagerState: PagerState,
     scope: CoroutineScope
 ) {
     NavigationBar {
-        pages.forEachIndexed { index, label ->
+        val items = listOf(
+           "Daily" to Icons.Filled.List,
+           "Store" to Icons.Filled.ShoppingCart,
+           "Home" to Icons.Filled.Home,
+           "Inventory" to Icons.Filled.Backpack,
+           "Settings" to Icons.Filled.Settings
+        )
+        items.forEachIndexed { index, (label, icon) ->
             NavigationBarItem(
-                selected = pagerState.currentPage == index,
-                onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
+                icon = { Icon(icon, contentDescription = label) },
                 label = { Text(label) },
-                icon = {
-                    when (label) {
-                        "Home" -> Icon(Icons.Default.Home, contentDescription = label)
-                        "Tasks" -> Icon(Icons.Default.List, contentDescription = label)
-                        "Store" -> Icon(Icons.Default.ShoppingCart, contentDescription = label)
-                        else -> Icon(Icons.Default.Home, contentDescription = label)
-                    }
-                }
+                selected = pagerState.currentPage == index,
+                onClick = { scope.launch { pagerState.animateScrollToPage(index) } }
             )
         }
     }
