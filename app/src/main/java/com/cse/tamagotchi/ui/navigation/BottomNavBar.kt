@@ -29,11 +29,11 @@ fun HabitGotchiBottomNav(
 ) {
     NavigationBar {
         val items = listOf(
-           "Daily" to Icons.Filled.List,
-           "Store" to Icons.Filled.ShoppingCart,
-           "Home" to Icons.Filled.Home,
-           "Inventory" to Icons.Filled.Backpack,
-           "Settings" to Icons.Filled.Settings
+            "Store" to Icons.Filled.ShoppingCart,
+            "Inventory" to Icons.Filled.Backpack,
+            "Home" to Icons.Filled.Home,
+            "Daily" to Icons.Filled.List,
+            "Settings" to Icons.Filled.Settings
         )
         items.forEachIndexed { index, (label, icon) ->
             NavigationBarItem(

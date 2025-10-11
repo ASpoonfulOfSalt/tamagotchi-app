@@ -74,10 +74,10 @@ fun AppNavRoot() {
             modifier = Modifier.padding(innerPadding)
         ) { page ->
             when (page) {
-                0 -> TaskScreen(viewModel = taskViewModel)
-                1 -> StoreScreen(viewModel = storeViewModel)
+                0 -> StoreScreen(viewModel = storeViewModel)
+                1 -> InventoryScreen(viewModel = storeViewModel)
                 2 -> HomeScreen(viewModel = storeViewModel)
-                3 -> InventoryScreen(viewModel = storeViewModel)
+                3 -> TaskScreen(viewModel = taskViewModel)
                 4 -> SettingsScreen() // stub for now
             }
         }
