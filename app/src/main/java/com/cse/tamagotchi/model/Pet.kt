@@ -1,5 +1,6 @@
 package com.cse.tamagotchi.model
 
+// TODO: Unused
 data class Pet(
     val name: String,
     var hunger: Int = 50,

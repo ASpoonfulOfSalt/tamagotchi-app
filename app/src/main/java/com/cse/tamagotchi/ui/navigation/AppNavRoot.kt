@@ -50,7 +50,7 @@ fun AppNavRoot() {
     // Create VMs here with factories (for now, keep store only)
     val storeViewModel: StoreViewModel = viewModel(factory = StoreViewModelFactory(LocalContext.current.applicationContext as Application))
     val taskViewModel: TaskViewModel = viewModel()
-    val homeViewModel: HomeViewModel = viewModel()
+    // val homeViewModel: HomeViewModel = viewModel()
     // Settings VM will come later
 
     // Back button behavior
