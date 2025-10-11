@@ -20,6 +20,9 @@ interface StoreItemDao {
     @Query("SELECT * FROM inventory_items")
     fun getAllItems(): Flow<List<StoreItem>>
 
+    @Query("DELETE FROM inventory_items")
+    suspend fun clearAllInventory()
+
     @Transaction
     suspend fun upsert(item: StoreItem) {
         val existingItem = getItemById(item.id)
