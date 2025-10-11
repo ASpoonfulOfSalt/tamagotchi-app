@@ -56,7 +56,7 @@ fun AppNavRoot() {
     val userPrefs = UserPreferencesRepository(application)
 
     // Create VMs here with factories (for now, keep store only)
-    val storeViewModel: StoreViewModel = viewModel(factory = StoreViewModelFactory(LocalContext.current.applicationContext as Application))
+    val storeViewModel: StoreViewModel = viewModel(factory = StoreViewModelFactory(application, database))
     val taskViewModel: TaskViewModel = viewModel()
     val settingsViewModel = remember { SettingsViewModel(userPrefs, database) }
     // val homeViewModel: HomeViewModel = viewModel()
