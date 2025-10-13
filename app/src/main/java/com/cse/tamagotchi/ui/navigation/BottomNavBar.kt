@@ -8,8 +8,10 @@
  * When adding a new page, update both `pages` in MainScreen
  * and extend the icon mapping here.
  */
+
 package com.cse.tamagotchi.ui.navigation
 
+import android.view.SoundEffectConstants
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
@@ -19,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.filled.Backpack
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.ui.platform.LocalView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -27,6 +30,7 @@ fun HabitGotchiBottomNav(
     pagerState: PagerState,
     scope: CoroutineScope
 ) {
+    val view = LocalView.current
     NavigationBar {
         val items = listOf(
             "Store" to Icons.Filled.ShoppingCart,
@@ -40,7 +44,10 @@ fun HabitGotchiBottomNav(
                 icon = { Icon(icon, contentDescription = label) },
                 label = { Text(label) },
                 selected = pagerState.currentPage == index,
-                onClick = { scope.launch { pagerState.animateScrollToPage(index) } }
+                onClick = { 
+                    view.playSoundEffect(SoundEffectConstants.CLICK)
+                    scope.launch { pagerState.animateScrollToPage(index) } 
+                }
             )
         }
     }

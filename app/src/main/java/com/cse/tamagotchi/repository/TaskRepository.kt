@@ -1,31 +1,33 @@
 package com.cse.tamagotchi.repository
 
+import com.cse.tamagotchi.data.TaskDao
 import com.cse.tamagotchi.model.Task
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
-class TaskRepository {
-    private val _tasks = MutableStateFlow<List<Task>>(emptyList())
-    val tasks: StateFlow<List<Task>> = _tasks
+class TaskRepository(private val taskDao: TaskDao) {
+    val tasks: Flow<List<Task>> = taskDao.getAllTasks()
 
-    fun addTask(task: Task) {
-        _tasks.value = _tasks.value + task
-    }
-
-    fun completeTask(taskId: String) {
-        _tasks.value = _tasks.value.map { task ->
-           if (task.id == taskId) task.copy(isCompleted = true) else task
+    suspend fun completeTask(taskId: String) {
+        val task = tasks.first().find { it.id == taskId }
+        if (task != null) {
+            taskDao.updateTask(task.copy(isCompleted = true))
         }
     }
 
-    fun loadSampleTasks() {
-        // TODO: Replace with true Repository behaviour.
-        val sampleTasks = listOf(
-            Task(title = "Drink Water", isDaily = true),
-            Task(title = "Go for a Walk", isDaily = true),
-            Task(title = "Study Kotlin", isDaily = true),
-            Task(title = "Weekly Clean Room", isDaily = false)
-        )
-        _tasks.value = sampleTasks
+    suspend fun resetTasks() {
+        taskDao.resetAllTasks()
+    }
+
+    suspend fun loadSampleTasks() {
+        if (tasks.first().isEmpty()) {
+            val sampleTasks = listOf(
+                Task(title = "Drink Water", isDaily = true),
+                Task(title = "Go for a Walk", isDaily = true),
+                Task(title = "Study Kotlin", isDaily = true),
+                Task(title = "Weekly Clean Room", isDaily = false)
+            )
+            taskDao.insertAll(sampleTasks)
+        }
     }
 }
