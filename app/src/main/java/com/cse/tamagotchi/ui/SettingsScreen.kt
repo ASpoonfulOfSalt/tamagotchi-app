@@ -11,6 +11,31 @@ import com.cse.tamagotchi.viewmodel.SettingsViewModel
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel) {
     val isDarkMode by viewModel.isDarkMode.collectAsState(initial = false)
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Reset All Data") },
+            text = { Text("Are you sure you want to reset all data? This action cannot be undone.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.resetAppData()
+                        showDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Reset")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -37,7 +62,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         Spacer(Modifier.height(48.dp))
 
         Button(
-            onClick = { viewModel.resetAppData() },
+            onClick = { showDialog = true },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
             modifier = Modifier.fillMaxWidth()
         ) {
