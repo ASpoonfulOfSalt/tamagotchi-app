@@ -17,7 +17,7 @@ class SettingsViewModel(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
 
-    val isDarkMode = userPrefs.isDarkMode // unresolved reference "isDarkMode"
+    val isDarkMode = userPrefs.isDarkMode
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     fun toggleDarkMode(enabled: Boolean) {
