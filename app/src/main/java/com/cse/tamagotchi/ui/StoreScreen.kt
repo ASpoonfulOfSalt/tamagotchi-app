@@ -1,5 +1,6 @@
 package com.cse.tamagotchi.ui
 
+import android.view.SoundEffectConstants
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -62,6 +64,7 @@ private fun StoreItemList(items: List<StoreItem>, onPurchaseClick: (StoreItem) -
 
 @Composable
 private fun StoreItemRow(item: StoreItem, onPurchaseClick: (StoreItem) -> Unit) {
+    val view = LocalView.current
     Card(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -85,7 +88,10 @@ private fun StoreItemRow(item: StoreItem, onPurchaseClick: (StoreItem) -> Unit) 
                 Text(text = item.name, fontWeight = FontWeight.Bold)
                 Text(text = "Price: ${item.price} coins")
             }
-            Button(onClick = { onPurchaseClick(item) }) {
+            Button(onClick = { 
+                view.playSoundEffect(SoundEffectConstants.CLICK)
+                onPurchaseClick(item) 
+            }) {
                 Text("Buy")
             }
         }

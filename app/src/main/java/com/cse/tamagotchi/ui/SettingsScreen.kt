@@ -1,10 +1,12 @@
 package com.cse.tamagotchi.ui
 
+import android.view.SoundEffectConstants
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.cse.tamagotchi.viewmodel.SettingsViewModel
 
@@ -12,6 +14,7 @@ import com.cse.tamagotchi.viewmodel.SettingsViewModel
 fun SettingsScreen(viewModel: SettingsViewModel) {
     val isDarkMode by viewModel.isDarkMode.collectAsState(initial = false)
     var showDialog by remember { mutableStateOf(false) }
+    val view = LocalView.current
 
     if (showDialog) {
         AlertDialog(
@@ -21,6 +24,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             confirmButton = {
                 Button(
                     onClick = {
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
                         viewModel.resetAppData()
                         showDialog = false
                     },
@@ -30,7 +34,10 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 }
             },
             dismissButton = {
-                Button(onClick = { showDialog = false }) {
+                Button(onClick = {
+                    view.playSoundEffect(SoundEffectConstants.CLICK)
+                    showDialog = false
+                }) {
                     Text("Cancel")
                 }
             }
@@ -55,14 +62,20 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             Spacer(Modifier.weight(1f))
             Switch(
                 checked = isDarkMode,
-                onCheckedChange = { viewModel.toggleDarkMode(it) }
+                onCheckedChange = {
+                    view.playSoundEffect(SoundEffectConstants.CLICK)
+                    viewModel.toggleDarkMode(it)
+                }
             )
         }
 
         Spacer(Modifier.height(48.dp))
 
         Button(
-            onClick = { showDialog = true },
+            onClick = {
+                view.playSoundEffect(SoundEffectConstants.CLICK)
+                showDialog = true
+            },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
             modifier = Modifier.fillMaxWidth()
         ) {

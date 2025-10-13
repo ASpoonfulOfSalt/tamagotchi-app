@@ -1,13 +1,6 @@
-/**
- * Displays a list of tasks.
- * Each row shows the task title and a checkbox.
- *
- * `onTaskClick` is triggered when the row or checkbox is clicked.
- * This pushes the task ID back to the ViewModel for state updates.
- */
-
 package com.cse.tamagotchi.ui
 
+import android.view.SoundEffectConstants
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,12 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.cse.tamagotchi.viewmodel.TaskViewModel
 
 @Composable
 fun TaskScreen(viewModel: TaskViewModel) {
     val tasks by viewModel.tasks.collectAsState(initial = emptyList())
+    val view = LocalView.current
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp)
@@ -33,16 +28,21 @@ fun TaskScreen(viewModel: TaskViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .clickable { viewModel.completeTask(task.id) },
+                    .clickable {
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
+                        viewModel.completeTask(task.id)
+                    },
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(task.title)
                 Checkbox(
                     checked = task.isCompleted,
-                    onCheckedChange = { viewModel.completeTask(task.id) }
+                    onCheckedChange = { 
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
+                        viewModel.completeTask(task.id) 
+                    }
                 )
             }
         }
     }
 }
-
