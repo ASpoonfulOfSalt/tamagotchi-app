@@ -14,11 +14,11 @@ package com.cse.tamagotchi.ui.navigation
 import android.view.SoundEffectConstants
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Backpack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.platform.LocalView
@@ -36,7 +36,7 @@ fun HabitGotchiBottomNav(
             "Store" to Icons.Filled.ShoppingCart,
             "Inventory" to Icons.Filled.Backpack,
             "Home" to Icons.Filled.Home,
-            "Daily" to Icons.Filled.List,
+            "Daily" to Icons.AutoMirrored.Filled.List,
             "Settings" to Icons.Filled.Settings
         )
         items.forEachIndexed { index, (label, icon) ->
