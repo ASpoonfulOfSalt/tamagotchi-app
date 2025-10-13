@@ -5,11 +5,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.cse.tamagotchi.model.StoreItem
+import com.cse.tamagotchi.model.Task
 
-@Database(entities = [StoreItem::class], version = 2, exportSchema = false)
+@Database(entities = [StoreItem::class, Task::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun storeItemDao(): StoreItemDao
+    abstract fun taskDao(): TaskDao
 
     companion object {
         @Volatile
