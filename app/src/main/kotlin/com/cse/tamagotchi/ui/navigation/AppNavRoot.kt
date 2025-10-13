@@ -38,6 +38,8 @@ import com.cse.tamagotchi.ui.TaskScreen
 import com.cse.tamagotchi.viewmodel.SettingsViewModel
 import com.cse.tamagotchi.viewmodel.StoreViewModel
 import com.cse.tamagotchi.viewmodel.StoreViewModelFactory
+import com.cse.tamagotchi.viewmodel.TamagotchiViewModel
+import com.cse.tamagotchi.viewmodel.TamagotchiViewModelFactory
 import com.cse.tamagotchi.viewmodel.TaskViewModel
 import com.cse.tamagotchi.viewmodel.TaskViewModelFactory
 import kotlinx.coroutines.launch
@@ -57,8 +59,8 @@ fun AppNavRoot() {
     // Create VMs here with factories (for now, keep store only)
     val storeViewModel: StoreViewModel = viewModel(factory = StoreViewModelFactory(application, database))
     val taskViewModel: TaskViewModel = viewModel(factory = TaskViewModelFactory(taskRepository))
-    val settingsViewModel = remember { SettingsViewModel(userPrefs, database, taskViewModel.repository) }
-    // val homeViewModel: HomeViewModel = viewModel()
+    val settingsViewModel: SettingsViewModel = remember { SettingsViewModel(userPrefs, database, taskViewModel.repository) }
+    val tamagotchiViewModel: TamagotchiViewModel = viewModel(factory = TamagotchiViewModelFactory(application))
     // Settings VM will come later
 
     // Back button behavior
@@ -84,7 +86,7 @@ fun AppNavRoot() {
             when (page) {
                 0 -> StoreScreen(viewModel = storeViewModel)
                 1 -> InventoryScreen(viewModel = storeViewModel)
-                2 -> HomeScreen(viewModel = storeViewModel)
+                2 -> HomeScreen(viewModel = tamagotchiViewModel)
                 3 -> TaskScreen(viewModel = taskViewModel)
                 4 -> SettingsScreen(viewModel = settingsViewModel)
             }
