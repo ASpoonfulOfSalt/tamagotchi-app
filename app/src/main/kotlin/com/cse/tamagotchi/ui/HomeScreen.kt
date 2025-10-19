@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,12 +20,47 @@ fun HomeScreen(viewModel: TamagotchiViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val tamagotchi = uiState.tamagotchi
     val snackbarHostState = remember { SnackbarHostState() }
+    var showRenameDialog by rememberSaveable { mutableStateOf(false) }
+    var newName by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let {
             snackbarHostState.showSnackbar(it)
             viewModel.userMessageShown()
         }
+    }
+
+    if (showRenameDialog) {
+        AlertDialog(
+            onDismissRequest = { showRenameDialog = false },
+            title = { Text("Rename Pet") },
+            text = {
+                OutlinedTextField(
+                    value = newName,
+                    onValueChange = { newName = it },
+                    label = { Text("New Name") },
+                    singleLine = true
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (newName.isNotBlank()) {
+                            viewModel.renamePet(newName)
+                            showRenameDialog = false
+                            newName = ""
+                        }
+                    }
+                ) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showRenameDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -62,17 +98,18 @@ fun HomeScreen(viewModel: TamagotchiViewModel) {
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = tamagotchi.name, style = MaterialTheme.typography.headlineMedium)
+                    Text(
+                        text = tamagotchi.name, 
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.clickable { showRenameDialog = true }
+                    )
 
                     Spacer(Modifier.height(8.dp))
 
                     Box(
                         modifier = Modifier
                             .size(160.dp)
-                            .background(Color.White, RoundedCornerShape(16.dp))
-                            .clickable {
-                                // optionally rename or open dialog
-                            },
+                            .background(Color.White, RoundedCornerShape(16.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Text("🐾", style = MaterialTheme.typography.headlineLarge)
