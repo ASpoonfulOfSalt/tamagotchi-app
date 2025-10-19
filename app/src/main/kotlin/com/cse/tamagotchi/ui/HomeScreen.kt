@@ -1,5 +1,7 @@
 package com.cse.tamagotchi.ui
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,8 +12,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.cse.tamagotchi.R
+import com.cse.tamagotchi.model.TamagotchiExpression
 import com.cse.tamagotchi.viewmodel.TamagotchiViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -106,13 +111,19 @@ fun HomeScreen(viewModel: TamagotchiViewModel) {
 
                     Spacer(Modifier.height(8.dp))
 
-                    Box(
-                        modifier = Modifier
-                            .size(160.dp)
-                            .background(Color.White, RoundedCornerShape(16.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("🐾", style = MaterialTheme.typography.headlineLarge)
+                    Crossfade(targetState = tamagotchi.expression, label = "pet-expression") {
+                        expression ->
+                        Image(
+                            painter = painterResource(
+                                id = when (expression) {
+                                    TamagotchiExpression.HAPPY -> R.drawable.ic_tamagotchi_happy
+                                    TamagotchiExpression.NEUTRAL -> R.drawable.ic_tamagotchi_neutral
+                                    TamagotchiExpression.SAD -> R.drawable.ic_tamagotchi_sad
+                                }
+                            ),
+                            contentDescription = "Tamagotchi Expression",
+                            modifier = Modifier.size(160.dp)
+                        )
                     }
 
                     Spacer(Modifier.height(12.dp))
