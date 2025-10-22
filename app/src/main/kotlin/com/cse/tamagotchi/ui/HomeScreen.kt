@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,7 +18,8 @@ import com.cse.tamagotchi.viewmodel.TamagotchiViewModel
 
 @Composable
 fun HomeScreen(viewModel: TamagotchiViewModel) {
-    val tamagotchi by viewModel.tamagotchi.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val tamagotchi = uiState.tamagotchi
 
     // If you have an image resource: use Image(painterResource(R.drawable.sky_bg), ...)
     Box(modifier = Modifier.fillMaxSize()) {
@@ -56,7 +58,7 @@ fun HomeScreen(viewModel: TamagotchiViewModel) {
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.tamagotchi_dog),
-                    contentDescription = "Your pet's name is " + tamagotchi.name
+                    contentDescription = "Your pet's name is ${tamagotchi.name}"
                 )
             }
 

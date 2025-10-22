@@ -22,12 +22,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cse.tamagotchi.data.AppDatabase
+import com.cse.tamagotchi.repository.TamagotchiRepository
 import com.cse.tamagotchi.repository.TaskRepository
 import com.cse.tamagotchi.repository.UserPreferencesRepository
 import com.cse.tamagotchi.ui.HomeScreen
@@ -36,6 +36,7 @@ import com.cse.tamagotchi.ui.SettingsScreen
 import com.cse.tamagotchi.ui.StoreScreen
 import com.cse.tamagotchi.ui.TaskScreen
 import com.cse.tamagotchi.viewmodel.SettingsViewModel
+import com.cse.tamagotchi.viewmodel.SettingsViewModelFactory
 import com.cse.tamagotchi.viewmodel.StoreViewModel
 import com.cse.tamagotchi.viewmodel.StoreViewModelFactory
 import com.cse.tamagotchi.viewmodel.TamagotchiViewModel
@@ -55,11 +56,13 @@ fun AppNavRoot() {
     val userPrefs = UserPreferencesRepository(application)
     val taskDao = database.taskDao()
     val taskRepository = TaskRepository(taskDao)
+    val tamagotchiRepository = TamagotchiRepository(application)
 
     // Create VMs here with factories (for now, keep store only)
     val storeViewModel: StoreViewModel = viewModel(factory = StoreViewModelFactory(application, database))
     val taskViewModel: TaskViewModel = viewModel(factory = TaskViewModelFactory(taskRepository))
-    val settingsViewModel: SettingsViewModel = remember { SettingsViewModel(userPrefs, database, taskViewModel.repository) }
+    val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory(
+        userPrefs, database, taskRepository, tamagotchiRepository))
     val tamagotchiViewModel: TamagotchiViewModel = viewModel(factory = TamagotchiViewModelFactory(application))
     // Settings VM will come later
 

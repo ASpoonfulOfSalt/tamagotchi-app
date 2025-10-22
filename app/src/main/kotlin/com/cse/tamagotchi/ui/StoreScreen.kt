@@ -22,20 +22,44 @@ fun StoreScreen(
     viewModel: StoreViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        StoreHeader(coins = uiState.userCoins)
-        Spacer(modifier = Modifier.height(16.dp))
-        StoreItemList(
-            items = uiState.items,
-            onPurchaseClick = { item ->
-                viewModel.purchaseItem(item)
+    LaunchedEffect(uiState.purchaseMessage) {
+        uiState.purchaseMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewModel.onPurchaseMessageShown()
+        }
+    }
+
+    Scaffold(
+        modifier = modifier,
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(
+                    snackbarData = data,
+
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    actionColor = MaterialTheme.colorScheme.primary
+                )
             }
-        )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
+            StoreHeader(coins = uiState.userCoins)
+            Spacer(modifier = Modifier.height(16.dp))
+            StoreItemList(
+                items = uiState.items,
+                onPurchaseClick = { item ->
+                    viewModel.purchaseItem(item)
+                }
+            )
+        }
     }
 }
 
@@ -88,9 +112,9 @@ private fun StoreItemRow(item: StoreItem, onPurchaseClick: (StoreItem) -> Unit) 
                 Text(text = item.name, fontWeight = FontWeight.Bold)
                 Text(text = "Price: ${item.price} coins")
             }
-            Button(onClick = { 
+            Button(onClick = {
                 view.playSoundEffect(SoundEffectConstants.CLICK)
-                onPurchaseClick(item) 
+                onPurchaseClick(item)
             }) {
                 Text("Buy")
             }

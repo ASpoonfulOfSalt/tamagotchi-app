@@ -69,7 +69,16 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             )
         }
 
-        Spacer(Modifier.height(48.dp))
+        Spacer(Modifier.height(24.dp))
+
+        Button(
+            onClick = { viewModel.resetPetStats() },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Reset Pet Stats (Testing)")
+        }
+
+        Spacer(Modifier.height(24.dp))
 
         Button(
             onClick = {

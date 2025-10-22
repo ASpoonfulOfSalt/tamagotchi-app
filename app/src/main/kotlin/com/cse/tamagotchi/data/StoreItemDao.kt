@@ -1,10 +1,12 @@
 package com.cse.tamagotchi.data
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.cse.tamagotchi.model.StoreItem
 import kotlinx.coroutines.flow.Flow
 
@@ -13,6 +15,12 @@ interface StoreItemDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: StoreItem)
+
+    @Update
+    suspend fun update(item: StoreItem)
+
+    @Delete
+    suspend fun delete(item: StoreItem)
 
     @Query("SELECT * FROM inventory_items WHERE id = :id")
     suspend fun getItemById(id: Int): StoreItem?
