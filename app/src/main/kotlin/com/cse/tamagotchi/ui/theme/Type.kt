@@ -2,33 +2,47 @@ package com.cse.tamagotchi.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.cse.tamagotchi.R
 
-// Set of Material typography styles to start with
+val Chewy = FontFamily(
+    Font(R.font.chewy_regular, FontWeight.Normal)
+)
+
 val Typography = Typography(
+    // keep chewy font as the default for headers and body text
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = Chewy,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
+        fontSize = 18.sp
+    ),
     titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = Chewy,
         fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
+        fontSize = 24.sp
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = Chewy,
+        fontWeight = FontWeight.Normal,
+        fontSize = 26.sp
+    ),
+    // keep plain default bold for all buttons
+    labelLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp
     ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp
     )
-    */
 )

@@ -11,9 +11,11 @@ class StoreRepository(private val storeItemDao: StoreItemDao) {
      */
     fun getAvailableItems(): List<StoreItem> {
         return listOf(
+            // items listed no longer use xml files - instead using png.
             StoreItem(id = 1, name = "Apple", price = 10, iconRes = R.drawable.ic_food_apple),
             StoreItem(id = 2, name = "Book", price = 50, iconRes = R.drawable.ic_play_book),
-            StoreItem(id = 3, name = "Ball", price = 30, iconRes = R.drawable.ic_play_ball)
+            StoreItem(id = 3, name = "Ball", price = 30, iconRes = R.drawable.ic_play_ball),
+            StoreItem(id = 4, name = "Cake", price = 100, iconRes = R.drawable.ic_food_cake)
             // Add more items here as needed
         )
     }

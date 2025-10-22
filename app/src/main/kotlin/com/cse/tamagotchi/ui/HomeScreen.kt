@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.cse.tamagotchi.R
 import com.cse.tamagotchi.viewmodel.TamagotchiViewModel
 
 @Composable
@@ -53,7 +54,10 @@ fun HomeScreen(viewModel: TamagotchiViewModel) {
                     },
                 contentAlignment = Alignment.Center
             ) {
-                Text("🐾", style = MaterialTheme.typography.headlineLarge)
+                Image(
+                    painter = painterResource(id = R.drawable.tamagotchi_dog),
+                    contentDescription = "Your pet's name is " + tamagotchi.name
+                )
             }
 
             Spacer(Modifier.height(12.dp))
