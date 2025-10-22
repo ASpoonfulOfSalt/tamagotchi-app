@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cse.tamagotchi.repository.UserPreferencesRepository
 import com.cse.tamagotchi.data.AppDatabase
+import com.cse.tamagotchi.model.Tamagotchi
+import com.cse.tamagotchi.repository.TamagotchiRepository
 import com.cse.tamagotchi.repository.TaskRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -14,7 +16,8 @@ import kotlinx.coroutines.withContext
 class SettingsViewModel(
     private val userPrefs: UserPreferencesRepository,
     private val database: AppDatabase,
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val tamagotchiRepository: TamagotchiRepository
 ) : ViewModel() {
 
     val isDarkMode = userPrefs.isDarkMode
@@ -23,6 +26,12 @@ class SettingsViewModel(
     fun toggleDarkMode(enabled: Boolean) {
         viewModelScope.launch {
             userPrefs.toggleTheme(enabled)
+        }
+    }
+
+    fun resetPetStats() {
+        viewModelScope.launch {
+            tamagotchiRepository.saveTamagotchi(Tamagotchi())
         }
     }
 
@@ -38,6 +47,9 @@ class SettingsViewModel(
 
             // Reset tasks
             taskRepository.resetTasks()
+
+            // Reset pet
+            resetPetStats()
         }
     }
 }

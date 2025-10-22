@@ -13,7 +13,8 @@ class StoreRepository(private val storeItemDao: StoreItemDao) {
         return listOf(
             StoreItem(id = 1, name = "Apple", price = 10, iconRes = R.drawable.ic_food_apple),
             StoreItem(id = 2, name = "Book", price = 50, iconRes = R.drawable.ic_play_book),
-            StoreItem(id = 3, name = "Ball", price = 30, iconRes = R.drawable.ic_play_ball)
+            StoreItem(id = 3, name = "Ball", price = 30, iconRes = R.drawable.ic_play_ball),
+            StoreItem(id = 4, name = "Water", price = 5, iconRes = R.drawable.ic_food_water)
             // Add more items here as needed
         )
     }
@@ -30,6 +31,14 @@ class StoreRepository(private val storeItemDao: StoreItemDao) {
      */
     suspend fun purchaseItem(item: StoreItem) {
         storeItemDao.upsert(item)
+    }
+
+    suspend fun useItem(item: StoreItem) {
+        if (item.quantity > 1) {
+            storeItemDao.update(item.copy(quantity = item.quantity - 1))
+        } else {
+            storeItemDao.delete(item)
+        }
     }
 
     suspend fun clearInventory() {
