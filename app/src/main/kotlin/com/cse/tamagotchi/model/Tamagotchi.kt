@@ -17,6 +17,7 @@ data class Tamagotchi(
     val hunger: Int = 80,      // 0..100, higher = more fed
     val water: Int = 80,       // 0..100
     val happiness: Int = 80,   // 0..100
+    val currency: Int = 100,   // Starting currency
     val lastUpdatedMillis: Long = System.currentTimeMillis()
 ) {
     val expression: TamagotchiExpression
@@ -36,6 +37,9 @@ data class Tamagotchi(
 
     fun play(amount: Int = 15): Tamagotchi =
         copy(happiness = (happiness + amount).coerceAtMost(100), lastUpdatedMillis = System.currentTimeMillis())
+
+    fun addCurrency(amount: Int): Tamagotchi =
+        copy(currency = currency + amount)
 
     fun applyDecay(hungerDelta: Int, waterDelta: Int, happinessDelta: Int, nowMillis: Long = System.currentTimeMillis()): Tamagotchi {
         val newH = (hunger - hungerDelta).coerceIn(0, 100)

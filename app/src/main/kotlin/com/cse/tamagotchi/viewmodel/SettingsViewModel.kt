@@ -2,11 +2,11 @@ package com.cse.tamagotchi.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cse.tamagotchi.repository.UserPreferencesRepository
 import com.cse.tamagotchi.data.AppDatabase
 import com.cse.tamagotchi.model.Tamagotchi
 import com.cse.tamagotchi.repository.TamagotchiRepository
 import com.cse.tamagotchi.repository.TaskRepository
+import com.cse.tamagotchi.repository.UserPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -46,7 +46,8 @@ class SettingsViewModel(
             }
 
             // Reset tasks
-            taskRepository.resetTasks()
+            taskRepository.resetDailyTasks()
+            taskRepository.resetWeeklyTasks()
 
             // Reset pet
             resetPetStats()

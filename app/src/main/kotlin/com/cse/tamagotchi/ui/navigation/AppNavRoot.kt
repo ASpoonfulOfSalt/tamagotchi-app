@@ -1,14 +1,3 @@
-/**
- * HorizontalPager that holds the main screens.
- *
- * Each index corresponds to a specific page:
- *   0 -> HomeScreen
- *   1 -> TaskScreen
- *   2 -> StoreScreen (TODO: implement later)
- *
- * Keep this file as the single source of truth
- * for "what lives on each page".
- */
 package com.cse.tamagotchi.ui.navigation
 
 import android.app.Activity
@@ -27,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cse.tamagotchi.data.AppDatabase
+import com.cse.tamagotchi.repository.StoreRepository
 import com.cse.tamagotchi.repository.TamagotchiRepository
 import com.cse.tamagotchi.repository.TaskRepository
 import com.cse.tamagotchi.repository.UserPreferencesRepository
@@ -54,17 +44,18 @@ fun AppNavRoot() {
     val application = LocalContext.current.applicationContext as Application
     val database = AppDatabase.getDatabase(application)
     val userPrefs = UserPreferencesRepository(application)
+    val storeDao = database.storeItemDao()
+    val storeRepository = StoreRepository(storeDao)
     val taskDao = database.taskDao()
     val taskRepository = TaskRepository(taskDao)
     val tamagotchiRepository = TamagotchiRepository(application)
 
-    // Create VMs here with factories (for now, keep store only)
-    val storeViewModel: StoreViewModel = viewModel(factory = StoreViewModelFactory(application, database))
-    val taskViewModel: TaskViewModel = viewModel(factory = TaskViewModelFactory(taskRepository))
+    // Create VMs here with factories
+    val tamagotchiViewModel: TamagotchiViewModel = viewModel(factory = TamagotchiViewModelFactory(tamagotchiRepository, storeRepository))
+    val storeViewModel: StoreViewModel = viewModel(factory = StoreViewModelFactory(storeRepository, tamagotchiRepository))
+    val taskViewModel: TaskViewModel = viewModel(factory = TaskViewModelFactory(taskRepository, tamagotchiRepository, userPrefs))
     val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory(
         userPrefs, database, taskRepository, tamagotchiRepository))
-    val tamagotchiViewModel: TamagotchiViewModel = viewModel(factory = TamagotchiViewModelFactory(application))
-    // Settings VM will come later
 
     // Back button behavior
     BackHandler {
@@ -77,8 +68,8 @@ fun AppNavRoot() {
 
     Scaffold(
         topBar = {
-            val uiState by storeViewModel.uiState.collectAsState()
-            HabitGotchiTopBar(uiState.userCoins)
+            val uiState by tamagotchiViewModel.uiState.collectAsState()
+            HabitGotchiTopBar(uiState.tamagotchi.currency)
         },
         bottomBar = { HabitGotchiBottomNav(pagerState, scope) }
     ) { innerPadding ->
