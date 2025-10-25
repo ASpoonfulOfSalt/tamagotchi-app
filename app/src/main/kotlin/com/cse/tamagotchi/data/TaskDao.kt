@@ -24,4 +24,10 @@ interface TaskDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(tasks: List<Task>)
+
+    @Query("DELETE FROM tasks WHERE is_daily = 1")
+    suspend fun deleteDailyTasks()
+
+    @Query("DELETE FROM tasks WHERE is_daily = 0")
+    suspend fun deleteWeeklyTasks()
 }

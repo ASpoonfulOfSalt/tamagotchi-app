@@ -17,5 +17,7 @@ data class Task(
     @ColumnInfo(name = "is_daily")
     val isDaily: Boolean = true,
     @ColumnInfo(name = "is_completed")
-    var isCompleted: Boolean = false
+    var isCompleted: Boolean = false,
+    @ColumnInfo(name = "currency_reward")
+    val currencyReward: Int = 10
 )
