@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cse.tamagotchi.data.AppDatabase
@@ -25,6 +26,7 @@ import com.cse.tamagotchi.ui.InventoryScreen
 import com.cse.tamagotchi.ui.SettingsScreen
 import com.cse.tamagotchi.ui.StoreScreen
 import com.cse.tamagotchi.ui.TaskScreen
+import com.cse.tamagotchi.ui.theme.TamagotchiTheme
 import com.cse.tamagotchi.viewmodel.SettingsViewModel
 import com.cse.tamagotchi.viewmodel.SettingsViewModelFactory
 import com.cse.tamagotchi.viewmodel.StoreViewModel
@@ -34,8 +36,6 @@ import com.cse.tamagotchi.viewmodel.TamagotchiViewModelFactory
 import com.cse.tamagotchi.viewmodel.TaskViewModel
 import com.cse.tamagotchi.viewmodel.TaskViewModelFactory
 import kotlinx.coroutines.launch
-
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -59,6 +59,9 @@ fun AppNavRoot() {
     val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory(
         userPrefs, database, taskRepository, tamagotchiRepository))
 
+    // Hoist the dark mode state to the top level
+    val isDarkMode by settingsViewModel.isDarkMode.collectAsState(initial = false)
+
     // Back button behavior
     BackHandler {
         if (pagerState.currentPage != 2) {
@@ -68,24 +71,26 @@ fun AppNavRoot() {
         }
     }
 
-    Scaffold(
-        topBar = {
-            val uiState by tamagotchiViewModel.uiState.collectAsState()
-            HabitGotchiTopBar(uiState.tamagotchi.currency)
-        },
-        bottomBar = { HabitGotchiBottomNav(pagerState, scope) }
-    ) { innerPadding ->
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.padding(innerPadding)
-        ) { page ->
-            when (page) {
-                0 -> StoreScreen(viewModel = storeViewModel)
-                1 -> InventoryScreen(viewModel = storeViewModel)
-                // --- THIS IS THE ONLY LINE THAT WAS CHANGED ---
-                2 -> HomeScreen(viewModel = tamagotchiViewModel)
-                3 -> TaskScreen(viewModel = taskViewModel)
-                4 -> SettingsScreen(viewModel = settingsViewModel)
+    TamagotchiTheme(darkTheme = isDarkMode) {
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                val uiState by tamagotchiViewModel.uiState.collectAsState()
+                HabitGotchiTopBar(uiState.tamagotchi.currency)
+            },
+            bottomBar = { HabitGotchiBottomNav(pagerState, scope) }
+        ) { innerPadding ->
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.padding(innerPadding)
+            ) { page ->
+                when (page) {
+                    0 -> StoreScreen(viewModel = storeViewModel, isDarkMode = isDarkMode)
+                    1 -> InventoryScreen(viewModel = storeViewModel)
+                    2 -> HomeScreen(viewModel = tamagotchiViewModel, isDarkMode = isDarkMode)
+                    3 -> TaskScreen(viewModel = taskViewModel, isDarkMode = isDarkMode)
+                    4 -> SettingsScreen(viewModel = settingsViewModel)
+                }
             }
         }
     }

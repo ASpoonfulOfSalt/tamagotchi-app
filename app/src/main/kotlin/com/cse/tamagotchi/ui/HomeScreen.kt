@@ -2,10 +2,8 @@ package com.cse.tamagotchi.ui
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -17,11 +15,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cse.tamagotchi.R
 import com.cse.tamagotchi.model.TamagotchiExpression
+import com.cse.tamagotchi.ui.theme.DarkModeGreen
+import com.cse.tamagotchi.ui.theme.DarkGrey
+import com.cse.tamagotchi.ui.theme.LightModeGreen
+import com.cse.tamagotchi.ui.theme.PureWhite
 import com.cse.tamagotchi.viewmodel.TamagotchiViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: TamagotchiViewModel) {
+fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val tamagotchi = uiState.tamagotchi
     val snackbarHostState = remember { SnackbarHostState() }
@@ -69,6 +71,7 @@ fun HomeScreen(viewModel: TamagotchiViewModel) {
     }
 
     Scaffold(
+        containerColor = Color.Transparent,
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) { data ->
                 Snackbar(
@@ -80,20 +83,6 @@ fun HomeScreen(viewModel: TamagotchiViewModel) {
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            // background sky
-            Box(modifier = Modifier
-                .matchParentSize()
-                .background(Color(0xFF87CEEB)) // replace with Image for your SVG
-            )
-
-            // grass at bottom
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp)
-                .align(Alignment.BottomCenter)
-                .background(Color(0xFF2E8B57))
-            )
-
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
@@ -106,6 +95,7 @@ fun HomeScreen(viewModel: TamagotchiViewModel) {
                     Text(
                         text = tamagotchi.name, 
                         style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.clickable { showRenameDialog = true }
                     )
 
@@ -128,16 +118,21 @@ fun HomeScreen(viewModel: TamagotchiViewModel) {
 
                     Spacer(Modifier.height(12.dp))
 
-                    Text("Hunger: ${tamagotchi.hunger}")
-                    Text("Water: ${tamagotchi.water}")
-                    Text("Happiness: ${tamagotchi.happiness}")
+                    Text("Hunger: ${tamagotchi.hunger}", color = MaterialTheme.colorScheme.onBackground)
+                    Text("Water: ${tamagotchi.water}", color = MaterialTheme.colorScheme.onBackground)
+                    Text("Happiness: ${tamagotchi.happiness}", color = MaterialTheme.colorScheme.onBackground)
 
                     Spacer(Modifier.height(16.dp))
 
+                    val buttonColors = ButtonDefaults.buttonColors(
+                        containerColor = if (isDarkMode) DarkModeGreen else LightModeGreen,
+                        contentColor = if (isDarkMode) PureWhite else DarkGrey
+                    )
+
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = { viewModel.feedPet() }) { Text("Feed") }
-                        Button(onClick = { viewModel.hydratePet() }) { Text("Water") }
-                        Button(onClick = { viewModel.playPet() }) { Text("Play") }
+                        Button(onClick = { viewModel.feedPet() }, colors = buttonColors) { Text("Feed") }
+                        Button(onClick = { viewModel.hydratePet() }, colors = buttonColors) { Text("Water") }
+                        Button(onClick = { viewModel.playPet() }, colors = buttonColors) { Text("Play") }
                     }
                 }
             }

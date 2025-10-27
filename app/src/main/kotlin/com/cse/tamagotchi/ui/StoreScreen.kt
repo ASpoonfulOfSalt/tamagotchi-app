@@ -9,17 +9,23 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cse.tamagotchi.model.StoreItem
+import com.cse.tamagotchi.ui.theme.DarkModeGreen
+import com.cse.tamagotchi.ui.theme.DarkGrey
+import com.cse.tamagotchi.ui.theme.LightModeGreen
+import com.cse.tamagotchi.ui.theme.PureWhite
 import com.cse.tamagotchi.viewmodel.StoreViewModel
 
 @Composable
 fun StoreScreen(
     modifier: Modifier = Modifier,
-    viewModel: StoreViewModel
+    viewModel: StoreViewModel,
+    isDarkMode: Boolean
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -33,11 +39,11 @@ fun StoreScreen(
 
     Scaffold(
         modifier = modifier,
+        containerColor = Color.Transparent, // Make scaffold transparent
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) { data ->
                 Snackbar(
                     snackbarData = data,
-
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     actionColor = MaterialTheme.colorScheme.primary
@@ -57,7 +63,8 @@ fun StoreScreen(
                 items = uiState.items,
                 onPurchaseClick = { item ->
                     viewModel.purchaseItem(item)
-                }
+                },
+                isDarkMode = isDarkMode
             )
         }
     }
@@ -70,27 +77,38 @@ private fun StoreHeader(coins: Int) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "Shop", style = MaterialTheme.typography.headlineMedium)
-        Text(text = "Coins: $coins", style = MaterialTheme.typography.titleLarge)
+        Text(text = "Shop", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
+        Text(text = "Coins: $coins", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
     }
 }
 
 @Composable
-private fun StoreItemList(items: List<StoreItem>, onPurchaseClick: (StoreItem) -> Unit) {
+private fun StoreItemList(
+    items: List<StoreItem>,
+    onPurchaseClick: (StoreItem) -> Unit,
+    isDarkMode: Boolean
+) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(items) { item ->
-            StoreItemRow(item = item, onPurchaseClick = onPurchaseClick)
+            StoreItemRow(item = item, onPurchaseClick = onPurchaseClick, isDarkMode = isDarkMode)
         }
     }
 }
 
 @Composable
-private fun StoreItemRow(item: StoreItem, onPurchaseClick: (StoreItem) -> Unit) {
+private fun StoreItemRow(
+    item: StoreItem,
+    onPurchaseClick: (StoreItem) -> Unit,
+    isDarkMode: Boolean
+) {
     val view = LocalView.current
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        )
     ) {
         Row(
             modifier = Modifier
@@ -109,13 +127,19 @@ private fun StoreItemRow(item: StoreItem, onPurchaseClick: (StoreItem) -> Unit) 
                     .weight(1f)
                     .padding(horizontal = 12.dp)
             ) {
-                Text(text = item.name, fontWeight = FontWeight.Bold)
-                Text(text = "Price: ${item.price} coins")
+                Text(text = item.name, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+                Text(text = "Price: ${item.price} coins", color = MaterialTheme.colorScheme.onBackground)
             }
-            Button(onClick = {
-                view.playSoundEffect(SoundEffectConstants.CLICK)
-                onPurchaseClick(item)
-            }) {
+            Button(
+                onClick = {
+                    view.playSoundEffect(SoundEffectConstants.CLICK)
+                    onPurchaseClick(item)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isDarkMode) DarkModeGreen else LightModeGreen,
+                    contentColor = if (isDarkMode) PureWhite else DarkGrey
+                )
+            ) {
                 Text("Buy")
             }
         }

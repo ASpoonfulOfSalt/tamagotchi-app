@@ -25,6 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import com.cse.tamagotchi.ui.theme.DarkModeGreen
+import com.cse.tamagotchi.ui.theme.DarkGrey
+import com.cse.tamagotchi.ui.theme.DestructiveRed
+import com.cse.tamagotchi.ui.theme.LightModeGreen
+import com.cse.tamagotchi.ui.theme.PureWhite
 import com.cse.tamagotchi.viewmodel.SettingsViewModel
 
 @Composable
@@ -33,11 +38,16 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
     var showDialog by remember { mutableStateOf(false) }
     val view = LocalView.current
 
+    val greenButtonColors = ButtonDefaults.buttonColors(
+        containerColor = if (isDarkMode) DarkModeGreen else LightModeGreen,
+        contentColor = if (isDarkMode) PureWhite else DarkGrey
+    )
+
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text("Reset All Data") },
-            text = { Text("Are you sure you want to reset all data? This action cannot be undone.") },
+            title = { Text("Reset All Data", color = MaterialTheme.colorScheme.onSurface) },
+            text = { Text("Are you sure you want to reset all data? This action cannot be undone.", color = MaterialTheme.colorScheme.onSurfaceVariant) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -45,16 +55,22 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                         viewModel.resetAppData()
                         showDialog = false
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = DestructiveRed,
+                        contentColor = if (isDarkMode) PureWhite else DarkGrey
+                    )
                 ) {
                     Text("Reset")
                 }
             },
             dismissButton = {
-                Button(onClick = {
-                    view.playSoundEffect(SoundEffectConstants.CLICK)
-                    showDialog = false
-                }) {
+                Button(
+                    onClick = {
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
+                        showDialog = false
+                    },
+                    colors = greenButtonColors
+                ) {
                     Text("Cancel")
                 }
             }
@@ -68,14 +84,14 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Settings", style = MaterialTheme.typography.headlineMedium)
+        Text("Settings", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
         Spacer(Modifier.height(32.dp))
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Dark Mode", style = MaterialTheme.typography.titleMedium)
+            Text("Dark Mode", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
             Spacer(Modifier.weight(1f))
             Switch(
                 checked = isDarkMode,
@@ -90,6 +106,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
 
         Button(
             onClick = { viewModel.resetPetStats() },
+            colors = greenButtonColors,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Reset Pet Stats (Testing)")
@@ -102,7 +119,10 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 view.playSoundEffect(SoundEffectConstants.CLICK)
                 showDialog = true
             },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = DestructiveRed,
+                contentColor = if (isDarkMode) PureWhite else DarkGrey
+            ),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Reset All Data")

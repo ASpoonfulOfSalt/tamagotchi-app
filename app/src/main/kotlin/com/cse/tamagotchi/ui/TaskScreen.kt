@@ -17,7 +17,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,13 +36,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import com.cse.tamagotchi.ui.theme.DarkModeGreen
+import com.cse.tamagotchi.ui.theme.DarkGrey
+import com.cse.tamagotchi.ui.theme.DestructiveRed
+import com.cse.tamagotchi.ui.theme.LightModeGreen
+import com.cse.tamagotchi.ui.theme.PureWhite
 import com.cse.tamagotchi.viewmodel.TaskViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun TaskScreen(viewModel: TaskViewModel) {
+fun TaskScreen(viewModel: TaskViewModel, isDarkMode: Boolean) {
     val uiState by viewModel.uiState.collectAsState()
     val view = LocalView.current
 
@@ -70,13 +78,23 @@ fun TaskScreen(viewModel: TaskViewModel) {
                             taskName = ""
                             showAddTaskDialog = false
                         }
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isDarkMode) DarkModeGreen else LightModeGreen,
+                        contentColor = if (isDarkMode) PureWhite else DarkGrey
+                    )
                 ) {
                     Text("Add")
                 }
             },
             dismissButton = {
-                Button(onClick = { showAddTaskDialog = false }) {
+                Button(
+                    onClick = { showAddTaskDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = DestructiveRed,
+                        contentColor = if (isDarkMode) PureWhite else DarkGrey
+                    )
+                ) {
                     Text("Cancel")
                 }
             }
@@ -86,10 +104,15 @@ fun TaskScreen(viewModel: TaskViewModel) {
     // --- NEW: Scaffold to hold the FAB ---
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { showAddTaskDialog = true }) {
+            FloatingActionButton(
+                onClick = { showAddTaskDialog = true },
+                containerColor = if (isDarkMode) DarkModeGreen else LightModeGreen,
+                contentColor = if (isDarkMode) PureWhite else DarkGrey
+            ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Task")
             }
-        }
+        },
+        containerColor = Color.Transparent
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -116,13 +139,16 @@ fun TaskScreen(viewModel: TaskViewModel) {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(task.title) // Assuming 'title' is the correct property name
+                        Text(task.title, color = MaterialTheme.colorScheme.onBackground) // Assuming 'title' is the correct property name
                         Checkbox(
                             checked = task.isCompleted,
                             onCheckedChange = {
                                 view.playSoundEffect(SoundEffectConstants.CLICK)
                                 viewModel.completeTask(task.id)
-                            }
+                            },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = if (isDarkMode) DarkModeGreen else LightModeGreen
+                            )
                         )
                     }
                 }
@@ -153,6 +179,7 @@ private fun CountdownTimer(nextResetTime: Long) {
     Text(
         text = "Tasks reset in: $timeRemaining",
         style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onBackground,
         modifier = Modifier.fillMaxWidth()
     )
 }
