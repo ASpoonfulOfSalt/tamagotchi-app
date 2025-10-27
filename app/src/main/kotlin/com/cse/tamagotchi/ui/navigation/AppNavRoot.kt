@@ -35,6 +35,8 @@ import com.cse.tamagotchi.viewmodel.TaskViewModel
 import com.cse.tamagotchi.viewmodel.TaskViewModelFactory
 import kotlinx.coroutines.launch
 
+
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppNavRoot() {
@@ -80,6 +82,7 @@ fun AppNavRoot() {
             when (page) {
                 0 -> StoreScreen(viewModel = storeViewModel)
                 1 -> InventoryScreen(viewModel = storeViewModel)
+                // --- THIS IS THE ONLY LINE THAT WAS CHANGED ---
                 2 -> HomeScreen(viewModel = tamagotchiViewModel)
                 3 -> TaskScreen(viewModel = taskViewModel)
                 4 -> SettingsScreen(viewModel = settingsViewModel)

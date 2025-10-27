@@ -38,6 +38,10 @@ class TaskRepository(
         }
     }
 
+    suspend fun addTask(task: Task) {
+        taskDao.insertTask(task)
+    }
+
     suspend fun completeTask(taskId: String): Task? {
         val task = tasks.first().find { it.id == taskId }
         if (task != null && !task.isCompleted) {

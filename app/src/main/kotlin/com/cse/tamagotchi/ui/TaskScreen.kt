@@ -13,8 +13,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,37 +44,87 @@ fun TaskScreen(viewModel: TaskViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     val view = LocalView.current
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        CountdownTimer(nextResetTime = uiState.nextResetTime)
-        Spacer(modifier = Modifier.height(16.dp))
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(top = 16.dp)
-        ) {
-            items(uiState.tasks) { task ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable {
-                            view.playSoundEffect(SoundEffectConstants.CLICK)
-                            viewModel.completeTask(task.id)
-                        },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(task.title)
-                    Checkbox(
-                        checked = task.isCompleted,
-                        onCheckedChange = { 
-                            view.playSoundEffect(SoundEffectConstants.CLICK)
-                            viewModel.completeTask(task.id) 
+    // --- NEW: State for controlling the 'Add Task' dialog ---
+    var showAddTaskDialog by rememberSaveable { mutableStateOf(false) }
+    var taskName by rememberSaveable { mutableStateOf("") }
+
+    // --- NEW: The 'Add Task' Dialog ---
+    if (showAddTaskDialog) {
+        AlertDialog(
+            onDismissRequest = { showAddTaskDialog = false },
+            title = { Text("Add a New Task") },
+            text = {
+                OutlinedTextField(
+                    value = taskName,
+                    onValueChange = { taskName = it },
+                    label = { Text("Task Name") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (taskName.isNotBlank()) {
+                            viewModel.addTask(taskName) // Call the ViewModel function
+                            taskName = ""
+                            showAddTaskDialog = false
                         }
-                    )
+                    }
+                ) {
+                    Text("Add")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showAddTaskDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    // --- NEW: Scaffold to hold the FAB ---
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { showAddTaskDialog = true }) {
+                Icon(Icons.Default.Add, contentDescription = "Add Task")
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding) // Use padding from the Scaffold
+                .padding(16.dp)
+        ) {
+            CountdownTimer(nextResetTime = uiState.nextResetTime)
+            Spacer(modifier = Modifier.height(16.dp))
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(top = 16.dp)
+            ) {
+                // The user's provided code uses task.title, so we will use that.
+                items(uiState.tasks) { task ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .clickable {
+                                view.playSoundEffect(SoundEffectConstants.CLICK)
+                                viewModel.completeTask(task.id)
+                            },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(task.title) // Assuming 'title' is the correct property name
+                        Checkbox(
+                            checked = task.isCompleted,
+                            onCheckedChange = {
+                                view.playSoundEffect(SoundEffectConstants.CLICK)
+                                viewModel.completeTask(task.id)
+                            }
+                        )
+                    }
                 }
             }
         }

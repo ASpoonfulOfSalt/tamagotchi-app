@@ -83,6 +83,13 @@ class TaskViewModel(
         }
     }
 
+    fun addTask(taskName: String) {
+        viewModelScope.launch {
+            val newTask = Task(title = taskName, isDaily = true, currencyReward = 10)
+            taskRepository.addTask(newTask)
+        }
+    }
+
     fun completeTask(taskId: String) {
         viewModelScope.launch {
             val completedTask = taskRepository.completeTask(taskId)
