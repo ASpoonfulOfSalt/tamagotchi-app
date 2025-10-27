@@ -1,0 +1,42 @@
+{
+  "_comment": "The whitespace between tasks separates Daily tasks from Weekly tasks",
+  "tasks": [
+    { "title": "Drink Water", "description": "Stay hydrated by drinking a glass of water.", "isDaily": true, "currencyReward": 5 },
+    { "title": "Go for a Walk", "description": "Take a walk outside to get some fresh air.", "isDaily": true, "currencyReward": 15 },
+    { "title": "Study Kotlin", "description": "Learn something new in Kotlin today.", "isDaily": true, "currencyReward": 25 },
+    { "title": "Read a Book", "description": "Read for at least 20 minutes.", "isDaily": true, "currencyReward": 20 },
+    { "title": "Brush Teeth", "description": "Brush your teeth twice today.", "isDaily": true, "currencyReward": 5 },
+    { "title": "Make Your Bed", "description": "Start the day tidy by making your bed.", "isDaily": true, "currencyReward": 5 },
+    { "title": "Meditate", "description": "Take 10 minutes to meditate.", "isDaily": true, "currencyReward": 15 },
+    { "title": "Eat Breakfast", "description": "Don’t skip the most important meal of the day!", "isDaily": true, "currencyReward": 10 },
+    { "title": "Do 10 Push-ups", "description": "Stay active with a short exercise.", "isDaily": true, "currencyReward": 10 },
+    { "title": "Clean Desk", "description": "Organize your workspace.", "isDaily": true, "currencyReward": 10 },
+    { "title": "Compliment Someone", "description": "Say something kind to someone today.", "isDaily": true, "currencyReward": 10 },
+    { "title": "Plan Tomorrow", "description": "Write down tomorrow’s to-do list.", "isDaily": true, "currencyReward": 10 },
+    { "title": "Stretch for 5 Minutes", "description": "Improve your posture and flexibility.", "isDaily": true, "currencyReward": 10 },
+    { "title": "Eat a Fruit", "description": "Include one fruit in your meals today.", "isDaily": true, "currencyReward": 8 },
+    { "title": "Check Emails", "description": "Keep your inbox organized.", "isDaily": true, "currencyReward": 5 },
+    { "title": "Limit Screen Time", "description": "Spend less than 2 hours on social media.", "isDaily": true, "currencyReward": 15 },
+    { "title": "Journal Entry", "description": "Write one paragraph about your day.", "isDaily": true, "currencyReward": 15 },
+    { "title": "Call a Friend", "description": "Catch up with someone you care about.", "isDaily": true, "currencyReward": 20 },
+    { "title": "Take Out Trash", "description": "Empty household trash bins.", "isDaily": true, "currencyReward": 10 },
+    { "title": "Cook a Meal", "description": "Prepare a homemade meal.", "isDaily": true, "currencyReward": 15 },
+
+
+    { "title": "Clean Room", "description": "Do a full cleaning of your room.", "isDaily": false, "currencyReward": 40 },
+    { "title": "Do Laundry", "description": "Wash and fold your clothes.", "isDaily": false, "currencyReward": 40 },
+    { "title": "Meal Prep", "description": "Prepare meals for the upcoming week.", "isDaily": false, "currencyReward": 35 },
+    { "title": "Budget Review", "description": "Track your weekly expenses.", "isDaily": false, "currencyReward": 30 },
+    { "title": "Call Family", "description": "Spend time talking to your family.", "isDaily": false, "currencyReward": 30 },
+    { "title": "Organize Files", "description": "Clean your computer folders and documents.", "isDaily": false, "currencyReward": 25 },
+    { "title": "Vacuum Home", "description": "Vacuum all rooms in your home.", "isDaily": false, "currencyReward": 25 },
+    { "title": "Grocery Shopping", "description": "Restock your weekly groceries.", "isDaily": false, "currencyReward": 25 },
+    { "title": "Exercise Session", "description": "Workout for 30–45 minutes.", "isDaily": false, "currencyReward": 50 },
+    { "title": "Digital Detox", "description": "Go one day without social media.", "isDaily": false, "currencyReward": 50 },
+    { "title": "Volunteer or Help Someone", "description": "Spend time helping someone or volunteering.", "isDaily": false, "currencyReward": 60 },
+    { "title": "Recycle Items", "description": "Sort and recycle waste properly.", "isDaily": false, "currencyReward": 40 },
+    { "title": "Donate Old Clothes", "description": "Donate unused clothes to charity.", "isDaily": false, "currencyReward": 40 },
+    { "title": "Plan Next Week", "description": "Set goals and priorities for next week.", "isDaily": false, "currencyReward": 30 },
+    { "title": "Unplug for a Day", "description": "Spend a day offline and recharge.", "isDaily": false, "currencyReward": 70 }
+  ]
+}

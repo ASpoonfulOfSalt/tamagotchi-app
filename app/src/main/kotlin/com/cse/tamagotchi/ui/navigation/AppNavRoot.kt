@@ -47,7 +47,7 @@ fun AppNavRoot() {
     val storeDao = database.storeItemDao()
     val storeRepository = StoreRepository(storeDao)
     val taskDao = database.taskDao()
-    val taskRepository = TaskRepository(taskDao)
+    val taskRepository = TaskRepository(application, taskDao)
     val tamagotchiRepository = TamagotchiRepository(application)
 
     // Create VMs here with factories
