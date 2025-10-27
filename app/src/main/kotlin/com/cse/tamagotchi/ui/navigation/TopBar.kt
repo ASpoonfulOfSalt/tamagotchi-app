@@ -7,6 +7,7 @@ package com.cse.tamagotchi.ui.navigation
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -15,6 +16,9 @@ fun HabitGotchiTopBar(coins: Int) {
         title = { Text("HabitGotchi") },
         actions = {
             Text("Coins: $coins", style = MaterialTheme.typography.bodyLarge)
-        }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent
+        )
     )
 }

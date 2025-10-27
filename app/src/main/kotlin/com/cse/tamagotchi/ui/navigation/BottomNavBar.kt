@@ -21,6 +21,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Backpack
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -31,7 +32,9 @@ fun HabitGotchiBottomNav(
     scope: CoroutineScope
 ) {
     val view = LocalView.current
-    NavigationBar {
+    NavigationBar(
+        containerColor = Color.Transparent
+    ) {
         val items = listOf(
             "Store" to Icons.Filled.ShoppingCart,
             "Inventory" to Icons.Filled.Backpack,
