@@ -9,9 +9,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import java.util.Calendar
 
 class TamagotchiViewModel(
     private val repo: TamagotchiRepository,
@@ -23,6 +25,10 @@ class TamagotchiViewModel(
 
     init {
         viewModelScope.launch {
+            // Check and update the streak first
+            checkAndUpdateStreak()
+
+            // Then, continue setting up the UI state listeners
             combine(
                 repo.tamagotchiFlow,
                 storeRepository.getPurchasedItems()
@@ -38,6 +44,51 @@ class TamagotchiViewModel(
                 }
             }
         }
+    }
+
+    private fun checkAndUpdateStreak() = viewModelScope.launch {
+        // Fetch the most recent Tamagotchi state once
+        val tamagotchi = repo.tamagotchiFlow.first()
+
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val todayMillis = today.timeInMillis
+
+        val yesterday = Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_YEAR, -1)
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val yesterdayMillis = yesterday.timeInMillis
+
+        val newStreak: Int
+        var newT = tamagotchi
+
+        when (tamagotchi.lastDayOpened) {
+            todayMillis -> {
+                // App already opened today, do nothing to the streak.
+                return@launch
+            }
+            yesterdayMillis -> {
+                // Opened yesterday, increment streak.
+                newStreak = tamagotchi.streakCount + 1
+                showSpeechBubble("Streak +1!")
+            }
+            else -> {
+                // Missed a day, reset streak to 1.
+                newStreak = 1
+                _uiState.update { it.copy(userMessage = "Welcome back! Your new streak starts now.") }
+            }
+        }
+
+        newT = tamagotchi.copy(streakCount = newStreak, lastDayOpened = todayMillis)
+        repo.saveTamagotchi(newT)
     }
 
     fun feedPet() = useItem("Apple", "Yummy!") { it.feed() }
