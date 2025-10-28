@@ -180,7 +180,6 @@ fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
                         }
 
                         // --- Speech Bubble (no animation) ---
-                        // THIS IS THE CORRECTED BLOCK
                         val speechMessage = uiState.speechBubbleMessage
                         if (speechMessage != null) {
                             Box(
@@ -212,6 +211,14 @@ fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
                         Button(onClick = { viewModel.hydratePet() }, colors = buttonColors) { Text("Water") }
                         Button(onClick = { viewModel.playPet() }, colors = buttonColors) { Text("Play") }
                     }
+
+                    // --- STREAK COUNTER MOVED HERE ---
+                    Spacer(Modifier.height(24.dp))
+                    Text(
+                        text = "🔥 Daily Streak: ${tamagotchi.streakCount}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 }
             }
         }
