@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,7 @@ class UserPreferencesRepository(private val context: Context) {
         val IS_DARK_MODE = booleanPreferencesKey("is_dark_mode")
         val LAST_TASK_RESET_TIME = longPreferencesKey("last_task_reset_time")
         val LAST_WEEKLY_TASK_RESET_TIME = longPreferencesKey("last_weekly_task_reset_time")
+        val MUSIC_VOLUME = floatPreferencesKey("music_volume")
     }
 
     val isDarkMode: Flow<Boolean> = context.dataStore.data
@@ -28,6 +30,15 @@ class UserPreferencesRepository(private val context: Context) {
 
     val lastWeeklyTaskResetTime: Flow<Long> = context.dataStore.data
         .map { it[PreferencesKeys.LAST_WEEKLY_TASK_RESET_TIME] ?: 0L }
+
+    val musicVolume: Flow<Float> = context.dataStore.data
+        .map { it[PreferencesKeys.MUSIC_VOLUME] ?: 0.25f } // default mid-level
+
+    suspend fun updateMusicVolume(volume: Float) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.MUSIC_VOLUME] = volume.coerceIn(0f, 1f)
+        }
+    }
 
     suspend fun updateLastTaskResetTime(time: Long) {
         context.dataStore.edit {
