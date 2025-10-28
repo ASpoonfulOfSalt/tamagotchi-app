@@ -21,20 +21,18 @@ import com.cse.tamagotchi.ui.theme.DarkGrey
 import com.cse.tamagotchi.ui.theme.LightModeGreen
 import com.cse.tamagotchi.ui.theme.PureWhite
 import com.cse.tamagotchi.viewmodel.TamagotchiViewModel
-import kotlinx.coroutines.delay
 import java.util.Calendar
 
+// --- MODIFIED FUNCTION ---
+// This function now checks the time only once, preventing the recomposition loop.
 @Composable
-fun produceIsNightState(): State<Boolean> {
-    return produceState(initialValue = false) {
-        while (true) {
-            val calendar = Calendar.getInstance()
-            val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-            // Night mode is from 9 PM (21) to 8:59 AM (8)
-            value = currentHour >= 21 || currentHour < 9
-            // Wait for one minute before re-checking the time
-            delay(60_000)
-        }
+fun isNightMode(): Boolean {
+    // 'remember' ensures this calculation runs only once when the composable is first created.
+    return remember {
+        val calendar = Calendar.getInstance()
+        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+        // Night mode is from 9 PM (21) to 8:59 AM (8)
+        currentHour >= 21 || currentHour < 9
     }
 }
 
@@ -68,7 +66,8 @@ fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
     val snackbarHostState = remember { SnackbarHostState() }
     var showRenameDialog by rememberSaveable { mutableStateOf(false) }
     var newName by rememberSaveable { mutableStateOf("") }
-    val isNight by produceIsNightState()
+    // Call the new, simplified function
+    val isNight = isNightMode()
 
     LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let {
