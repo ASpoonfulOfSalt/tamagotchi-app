@@ -20,20 +20,21 @@ import com.cse.tamagotchi.ui.theme.DarkGrey
 import com.cse.tamagotchi.ui.theme.LightModeGreen
 import com.cse.tamagotchi.ui.theme.PureWhite
 import com.cse.tamagotchi.viewmodel.TamagotchiViewModel
+import kotlinx.coroutines.delay
 import java.util.Calendar
 
-// --- MODIFIED FUNCTION ---
-// This function now checks the time only once, preventing the recomposition loop.
 @Composable
-fun isNightMode(): Boolean {
-    // 'remember' ensures this calculation runs only once when the composable is first created.
-    return remember {
-        val calendar = Calendar.getInstance()
-        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-        // Night mode is from 9 PM (21) to 8:59 AM (8)
-        currentHour >= 21 || currentHour < 9
+fun produceIsNightState(): State<Boolean> {
+    return produceState(initialValue = false) {
+        while (true) {
+            val calendar = Calendar.getInstance()
+            val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+            value = currentHour >= 21 || currentHour < 9
+            delay(60_000)
+        }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,8 +44,7 @@ fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
     val snackbarHostState = remember { SnackbarHostState() }
     var showRenameDialog by rememberSaveable { mutableStateOf(false) }
     var newName by rememberSaveable { mutableStateOf("") }
-    // Call the new, simplified function
-    val isNight = isNightMode()
+    val isNight by produceIsNightState()
 
     LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let {
@@ -99,24 +99,23 @@ fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            // Sun/Moon in the top-right corner
             Image(
                 painter = painterResource(id = if (isNight) R.drawable.ic_night_moon else R.drawable.ic_day_sun),
                 contentDescription = if (isNight) "Night icon" else "Day icon",
                 modifier = Modifier
                     .padding(24.dp)
                     .size(125.dp)
-                    .align(Alignment.TopEnd) // Always in the top right
+                    .align(Alignment.TopEnd)
             )
 
-            // Stars/Clouds in the top-left corner
+
             Image(
                 painter = painterResource(id = if (isNight) R.drawable.ic_night_stars else R.drawable.ic_day_clouds),
                 contentDescription = if (isNight) "Stars icon" else "Clouds icon",
                 modifier = Modifier
                     .padding(24.dp)
                     .size(110.dp)
-                    .align(Alignment.TopStart) // Always in the top left
+                    .align(Alignment.TopStart)
             )
 
             if (uiState.isLoading) {
@@ -172,14 +171,14 @@ fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
                         Button(onClick = { viewModel.playPet() }, colors = buttonColors) { Text("Play") }
                     }
 
-                    // --- ADD THIS BLOCK BACK ---
+
                     Spacer(Modifier.height(24.dp))
                     Text(
                         text = "🔥 Daily Streak: ${tamagotchi.streakCount}",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                    // --- END OF NEW BLOCK ---
+
                 }
             }
         }
