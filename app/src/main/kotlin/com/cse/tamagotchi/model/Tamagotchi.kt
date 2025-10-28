@@ -18,6 +18,7 @@ data class Tamagotchi(
     val water: Int = 80,       // 0..100
     val happiness: Int = 80,   // 0..100
     val currency: Int = 100,   // Starting currency
+    val streakCount: Int = 0, // Daily login streak
     val lastUpdatedMillis: Long = System.currentTimeMillis()
 ) {
     val expression: TamagotchiExpression
