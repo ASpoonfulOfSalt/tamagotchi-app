@@ -20,6 +20,22 @@ import com.cse.tamagotchi.ui.theme.DarkGrey
 import com.cse.tamagotchi.ui.theme.LightModeGreen
 import com.cse.tamagotchi.ui.theme.PureWhite
 import com.cse.tamagotchi.viewmodel.TamagotchiViewModel
+import kotlinx.coroutines.delay
+import java.util.Calendar
+
+@Composable
+fun produceIsNightState(): State<Boolean> {
+    return produceState(initialValue = false) {
+        while (true) {
+            val calendar = Calendar.getInstance()
+            val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+            // Night mode is from 9 PM (21) to 8:59 AM (8)
+            value = currentHour >= 21 || currentHour < 9
+            // Wait for one minute before re-checking the time
+            delay(60_000)
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +45,7 @@ fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
     val snackbarHostState = remember { SnackbarHostState() }
     var showRenameDialog by rememberSaveable { mutableStateOf(false) }
     var newName by rememberSaveable { mutableStateOf("") }
+    val isNight by produceIsNightState()
 
     LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let {
@@ -83,17 +100,38 @@ fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+            // Sun/Moon in the top-right corner
+            Image(
+                painter = painterResource(id = if (isNight) R.drawable.ic_night_moon else R.drawable.ic_day_sun),
+                contentDescription = if (isNight) "Night icon" else "Day icon",
+                modifier = Modifier
+                    .padding(24.dp)
+                    .size(125.dp)
+                    .align(Alignment.TopEnd) // Always in the top right
+            )
+
+            // Stars/Clouds in the top-left corner
+            Image(
+                painter = painterResource(id = if (isNight) R.drawable.ic_night_stars else R.drawable.ic_day_clouds),
+                contentDescription = if (isNight) "Stars icon" else "Clouds icon",
+                modifier = Modifier
+                    .padding(24.dp)
+                    .size(110.dp)
+                    .align(Alignment.TopStart) // Always in the top left
+            )
+
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
                 Column(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .offset(y = 50.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = tamagotchi.name, 
+                        text = tamagotchi.name,
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.clickable { showRenameDialog = true }
@@ -102,7 +140,7 @@ fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
                     Spacer(Modifier.height(8.dp))
 
                     Crossfade(targetState = tamagotchi.expression, label = "pet-expression") {
-                        expression ->
+                            expression ->
                         Image(
                             painter = painterResource(
                                 id = when (expression) {
