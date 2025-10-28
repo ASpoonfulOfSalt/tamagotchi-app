@@ -10,6 +10,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -25,13 +26,10 @@ import com.cse.tamagotchi.ui.theme.PureWhite
 import com.cse.tamagotchi.viewmodel.TamagotchiViewModel
 import java.util.Calendar
 
-
 @Composable
 fun produceIsNightState(): State<Boolean> {
-    // 1. Set up a mutable state for isNight
     val isNight = remember { mutableStateOf(false) }
     val lifecycleOwner = LocalLifecycleOwner.current
-
 
     val updateTime: () -> Unit = {
         val calendar = Calendar.getInstance()
@@ -39,38 +37,52 @@ fun produceIsNightState(): State<Boolean> {
         isNight.value = currentHour >= 21 || currentHour < 9
     }
 
-
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            // When the app resumes (e.g., comes to foreground), update the time
             if (event == Lifecycle.Event.ON_RESUME) {
                 updateTime()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-
-
         updateTime()
-
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-
     return isNight
+}
+
+@Composable
+fun SpeechBubble(message: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.size(120.dp, 80.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_thought_bubble),
+            contentDescription = "Thought bubble",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
+        )
+        Text(
+            text = message,
+            color = Color.Black,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 8.dp, start = 35.dp)
+        )
+    }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
+    // Ensure you are using collectAsStateWithLifecycle
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val tamagotchi = uiState.tamagotchi
     val snackbarHostState = remember { SnackbarHostState() }
     var showRenameDialog by rememberSaveable { mutableStateOf(false) }
     var newName by rememberSaveable { mutableStateOf("") }
-
-    // Call the new state producer
     val isNight by produceIsNightState()
 
     LaunchedEffect(uiState.userMessage) {
@@ -93,67 +105,41 @@ fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
                 )
             },
             confirmButton = {
-                Button(
-                    onClick = {
-                        if (newName.isNotBlank()) {
-                            viewModel.renamePet(newName)
-                            showRenameDialog = false
-                            newName = ""
-                        }
+                Button(onClick = {
+                    if (newName.isNotBlank()) {
+                        viewModel.renamePet(newName)
+                        showRenameDialog = false
+                        newName = ""
                     }
-                ) {
-                    Text("Save")
-                }
+                }) { Text("Save") }
             },
             dismissButton = {
-                Button(onClick = { showRenameDialog = false }) {
-                    Text("Cancel")
-                }
+                Button(onClick = { showRenameDialog = false }) { Text("Cancel") }
             }
         )
     }
 
     Scaffold(
         containerColor = Color.Transparent,
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState) { data ->
-                Snackbar(
-                    snackbarData = data,
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            // Sun/Moon in the top-right corner
             Image(
                 painter = painterResource(id = if (isNight) R.drawable.ic_night_moon else R.drawable.ic_day_sun),
                 contentDescription = if (isNight) "Night icon" else "Day icon",
-                modifier = Modifier
-                    .padding(24.dp)
-                    .size(125.dp)
-                    .align(Alignment.TopEnd)
+                modifier = Modifier.padding(24.dp).size(125.dp).align(Alignment.TopEnd)
             )
-
-
             Image(
                 painter = painterResource(id = if (isNight) R.drawable.ic_night_stars else R.drawable.ic_day_clouds),
                 contentDescription = if (isNight) "Stars icon" else "Clouds icon",
-                modifier = Modifier
-                    .padding(24.dp)
-                    .size(110.dp)
-                    .align(Alignment.TopStart)
+                modifier = Modifier.padding(24.dp).size(110.dp).align(Alignment.TopStart)
             )
 
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
                 Column(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(16.dp)
-                        .offset(y = 50.dp),
+                    modifier = Modifier.align(Alignment.Center).padding(16.dp).offset(y = 50.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -162,30 +148,39 @@ fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.clickable { showRenameDialog = true }
                     )
-
                     Spacer(Modifier.height(8.dp))
 
-                    Crossfade(targetState = tamagotchi.expression, label = "pet-expression") {
-                            expression ->
-                        Image(
-                            painter = painterResource(
-                                id = when (expression) {
-                                    TamagotchiExpression.HAPPY -> R.drawable.ic_tamagotchi_happy
-                                    TamagotchiExpression.NEUTRAL -> R.drawable.ic_tamagotchi_neutral
-                                    TamagotchiExpression.SAD -> R.drawable.ic_tamagotchi_sad
-                                }
-                            ),
-                            contentDescription = "Tamagotchi Expression",
-                            modifier = Modifier.size(160.dp)
-                        )
+
+                    Box(contentAlignment = Alignment.Center) {
+                        Crossfade(targetState = tamagotchi.expression, label = "pet-expression") { expression ->
+                            Image(
+                                painter = painterResource(
+                                    id = when (expression) {
+                                        TamagotchiExpression.HAPPY -> R.drawable.ic_tamagotchi_happy
+                                        TamagotchiExpression.NEUTRAL -> R.drawable.ic_tamagotchi_neutral
+                                        TamagotchiExpression.SAD -> R.drawable.ic_tamagotchi_sad
+                                    }
+                                ),
+                                contentDescription = "Tamagotchi Expression",
+                                modifier = Modifier.size(160.dp)
+                            )
+                        }
+
+                        uiState.speechBubbleMessage?.let { message ->
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .offset(x = 60.dp, y = (-20).dp)
+                            ) {
+                                SpeechBubble(message = message)
+                            }
+                        }
                     }
 
                     Spacer(Modifier.height(12.dp))
-
                     Text("Hunger: ${tamagotchi.hunger}", color = MaterialTheme.colorScheme.onBackground)
                     Text("Water: ${tamagotchi.water}", color = MaterialTheme.colorScheme.onBackground)
                     Text("Happiness: ${tamagotchi.happiness}", color = MaterialTheme.colorScheme.onBackground)
-
                     Spacer(Modifier.height(16.dp))
 
                     val buttonColors = ButtonDefaults.buttonColors(
