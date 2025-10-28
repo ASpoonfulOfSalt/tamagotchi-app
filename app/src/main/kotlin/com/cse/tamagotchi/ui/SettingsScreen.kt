@@ -13,6 +13,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -101,6 +102,32 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 }
             )
         }
+
+        Spacer(Modifier.height(24.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Music Volume", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+        }
+
+        val currentVolume by viewModel.musicVolume.collectAsState(initial = 0.25f)
+        Spacer(Modifier.height(8.dp))
+
+        Slider(
+            value = currentVolume,
+            onValueChange = { viewModel.updateMusicVolume(it) },
+            valueRange = 0f..1f,
+            steps = 0,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Text(
+            text = "${(currentVolume * 100).toInt()}%",
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Spacer(Modifier.height(24.dp))
+
 
         Spacer(Modifier.height(24.dp))
 

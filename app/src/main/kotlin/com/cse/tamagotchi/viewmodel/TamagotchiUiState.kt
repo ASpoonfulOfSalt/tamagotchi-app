@@ -7,5 +7,6 @@ data class TamagotchiUiState(
     val tamagotchi: Tamagotchi = Tamagotchi(),
     val inventory: List<StoreItem> = emptyList(),
     val isLoading: Boolean = true,
-    val userMessage: String? = null
+    val userMessage: String? = null,
+    val speechBubbleMessage: String? = null
 )
