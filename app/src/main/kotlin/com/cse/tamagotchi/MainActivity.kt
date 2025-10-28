@@ -19,42 +19,33 @@ import com.cse.tamagotchi.ui.theme.TamagotchiTheme
 class MainActivity : ComponentActivity() {
 
     private lateinit var userPrefs: UserPreferencesRepository
-    // --- ADD THIS BLOCK: Handles the result of the permission request ---
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            // Permission is granted. Schedule the notifications.
             val scheduler = NotificationScheduler(this)
             scheduler.scheduleRepeatingNotification()
         } else {
-            // Optional: Explain to the user that the feature is unavailable
-            // because the permission was denied. You could show a Snackbar or a dialog.
         }
     }
 
-    // --- ADD THIS FUNCTION: Checks for permission and either requests it or schedules notifications ---
+
     private fun askNotificationPermission() {
-        // This is only required for Android 13 (API 33) and above.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             when {
                 ContextCompat.checkSelfPermission(
                     this,
                     Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED -> {
-                    // Permission is already granted, so schedule the notifications.
                     val scheduler = NotificationScheduler(this)
                     scheduler.scheduleRepeatingNotification()
                 }
-                // Optional: You can add a check for shouldShowRequestPermissionRationale here
-                // to show a custom explanation dialog before requesting the permission.
                 else -> {
-                    // Directly ask for the permission.
                     requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
         } else {
-            // For Android 12 and below, the permission is granted by default from the manifest.
             val scheduler = NotificationScheduler(this)
             scheduler.scheduleRepeatingNotification()
         }
