@@ -15,19 +15,17 @@ class NotificationScheduler(private val context: Context) {
         val intent = Intent(context, NotificationReceiver::class.java)
         return PendingIntent.getBroadcast(
             context,
-            0, // Request code
+            0,
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
     }
 
     fun scheduleRepeatingNotification() {
-        val interval = TimeUnit.HOURS.toMillis(3) // 3 hours
+        val interval = TimeUnit.HOURS.toMillis(3)
         val firstTriggerTime = System.currentTimeMillis() + interval
 
         try {
-            // Use setInexactRepeating for better battery performance.
-            // The system will align alarms from different apps.
             alarmManager.setInexactRepeating(
                 AlarmManager.RTC_WAKEUP,
                 firstTriggerTime,
@@ -35,8 +33,6 @@ class NotificationScheduler(private val context: Context) {
                 getPendingIntent()
             )
         } catch (e: SecurityException) {
-            // Handle cases where the permission is not granted
-            // You might want to log this or inform the user
         }
     }
 

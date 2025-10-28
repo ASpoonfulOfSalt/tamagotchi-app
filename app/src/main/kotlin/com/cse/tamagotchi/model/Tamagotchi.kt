@@ -20,7 +20,7 @@ data class Tamagotchi(
     val currency: Int = 100,   // Starting currency
     val streakCount: Int = 0,
     val lastUpdatedMillis: Long = System.currentTimeMillis(),
-    val lastDayOpened: Long = 0L // Store the day as a Long
+    val lastDayOpened: Long = 0L
 ) {
     val expression: TamagotchiExpression
         get() {

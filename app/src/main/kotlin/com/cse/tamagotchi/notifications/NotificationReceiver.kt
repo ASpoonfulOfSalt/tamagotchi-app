@@ -6,7 +6,6 @@ import android.content.Intent
 
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        // When the alarm fires, create and show the notification
         val notificationHelper = NotificationHelper(context)
         notificationHelper.showNotification()
     }
