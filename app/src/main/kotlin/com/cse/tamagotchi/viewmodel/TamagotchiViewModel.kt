@@ -13,7 +13,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
-import java.util.Calendar
+import kotlinx.coroutines.Job
+import java.util.Calendar // Import Calendar
 
 class TamagotchiViewModel(
     private val repo: TamagotchiRepository,
@@ -23,12 +24,11 @@ class TamagotchiViewModel(
     private val _uiState = MutableStateFlow(TamagotchiUiState())
     val uiState: StateFlow<TamagotchiUiState> = _uiState.asStateFlow()
 
+    private var speechBubbleJob: Job? = null
+
     init {
         viewModelScope.launch {
-            // Check and update the streak first
             checkAndUpdateStreak()
-
-            // Then, continue setting up the UI state listeners
             combine(
                 repo.tamagotchiFlow,
                 storeRepository.getPurchasedItems()
@@ -47,9 +47,9 @@ class TamagotchiViewModel(
     }
 
     private fun checkAndUpdateStreak() = viewModelScope.launch {
-        // Fetch the most recent Tamagotchi state once
         val tamagotchi = repo.tamagotchiFlow.first()
 
+        // Get the start of today
         val today = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 0)
             set(Calendar.MINUTE, 0)
@@ -58,6 +58,7 @@ class TamagotchiViewModel(
         }
         val todayMillis = today.timeInMillis
 
+        // Get the start of yesterday
         val yesterday = Calendar.getInstance().apply {
             add(Calendar.DAY_OF_YEAR, -1)
             set(Calendar.HOUR_OF_DAY, 0)
@@ -70,18 +71,16 @@ class TamagotchiViewModel(
         val newStreak: Int
         var newT = tamagotchi
 
+
         when (tamagotchi.lastDayOpened) {
             todayMillis -> {
-                // App already opened today, do nothing to the streak.
                 return@launch
             }
             yesterdayMillis -> {
-                // Opened yesterday, increment streak.
                 newStreak = tamagotchi.streakCount + 1
                 showSpeechBubble("Streak +1!")
             }
             else -> {
-                // Missed a day, reset streak to 1.
                 newStreak = 1
                 _uiState.update { it.copy(userMessage = "Welcome back! Your new streak starts now.") }
             }
@@ -90,6 +89,7 @@ class TamagotchiViewModel(
         newT = tamagotchi.copy(streakCount = newStreak, lastDayOpened = todayMillis)
         repo.saveTamagotchi(newT)
     }
+
 
     fun feedPet() = useItem("Apple", "Yummy!") { it.feed() }
 
@@ -106,12 +106,17 @@ class TamagotchiViewModel(
     fun userMessageShown() {
         _uiState.update { it.copy(userMessage = null) }
     }
-
+    
     private fun showSpeechBubble(message: String) {
+        speechBubbleJob?.cancel()
+
         _uiState.update { it.copy(speechBubbleMessage = message) }
-        viewModelScope.launch {
-            delay(2500) // The bubble will be visible for 2.5 seconds
-            _uiState.update { it.copy(speechBubbleMessage = null) }
+
+        speechBubbleJob = viewModelScope.launch {
+            delay(2500)
+            if (_uiState.value.speechBubbleMessage == message) {
+                _uiState.update { it.copy(speechBubbleMessage = null) }
+            }
         }
     }
 
@@ -125,7 +130,7 @@ class TamagotchiViewModel(
                 val current = _uiState.value.tamagotchi
                 val newT = transform(current)
                 repo.saveTamagotchi(newT)
-                showSpeechBubble(speechMessage) // Show the speech bubble on success
+                showSpeechBubble(speechMessage)
             } else {
                 _uiState.update { it.copy(userMessage = "You don't have any ${itemName}s left!") }
             }
