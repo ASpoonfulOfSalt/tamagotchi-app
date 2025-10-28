@@ -10,6 +10,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,6 +37,28 @@ fun produceIsNightState(): State<Boolean> {
         }
     }
 }
+
+@Composable
+fun SpeechBubble(message: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.size(120.dp, 80.dp), // Adjust size as needed
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_thought_bubble),
+            contentDescription = "Thought bubble",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds // Stretches the bubble to fill the Box
+        )
+        Text(
+            text = message,
+            color = Color.Black, // Set text color to contrast with the bubble
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 8.dp, start = 35.dp) // Adjust padding to center text in your bubble png
+        )
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -139,20 +162,37 @@ fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
 
                     Spacer(Modifier.height(8.dp))
 
-                    Crossfade(targetState = tamagotchi.expression, label = "pet-expression") {
-                            expression ->
-                        Image(
-                            painter = painterResource(
-                                id = when (expression) {
-                                    TamagotchiExpression.HAPPY -> R.drawable.ic_tamagotchi_happy
-                                    TamagotchiExpression.NEUTRAL -> R.drawable.ic_tamagotchi_neutral
-                                    TamagotchiExpression.SAD -> R.drawable.ic_tamagotchi_sad
-                                }
-                            ),
-                            contentDescription = "Tamagotchi Expression",
-                            modifier = Modifier.size(160.dp)
-                        )
+                    // --- Box to contain Pet and Speech Bubble ---
+                    Box(contentAlignment = Alignment.Center) {
+                        Crossfade(targetState = tamagotchi.expression, label = "pet-expression") {
+                                expression ->
+                            Image(
+                                painter = painterResource(
+                                    id = when (expression) {
+                                        TamagotchiExpression.HAPPY -> R.drawable.ic_tamagotchi_happy
+                                        TamagotchiExpression.NEUTRAL -> R.drawable.ic_tamagotchi_neutral
+                                        TamagotchiExpression.SAD -> R.drawable.ic_tamagotchi_sad
+                                    }
+                                ),
+                                contentDescription = "Tamagotchi Expression",
+                                modifier = Modifier.size(160.dp)
+                            )
+                        }
+
+                        // --- Speech Bubble (no animation) ---
+                        // THIS IS THE CORRECTED BLOCK
+                        val speechMessage = uiState.speechBubbleMessage
+                        if (speechMessage != null) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd) // Align to top-right of the parent Box
+                                    .offset(x = 60.dp, y = (-20).dp) // Adjust position
+                            ) {
+                                SpeechBubble(message = speechMessage)
+                            }
+                        }
                     }
+                    // --- End Pet and Speech Bubble Box ---
 
                     Spacer(Modifier.height(12.dp))
 
