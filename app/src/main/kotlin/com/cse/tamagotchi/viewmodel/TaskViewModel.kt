@@ -18,7 +18,8 @@ import java.util.Calendar
 
 data class TaskUiState(
     val tasks: List<Task> = emptyList(),
-    val nextResetTime: Long = 0L
+    val nextResetTime: Long = 0L,
+    val levelUpReward: Int = 0
 )
 
 class TaskViewModel(
@@ -97,7 +98,19 @@ class TaskViewModel(
                 val tamagotchi = tamagotchiRepository.tamagotchiFlow.first()
                 val updatedTamagotchi = tamagotchi.addCurrency(completedTask.currencyReward)
                 tamagotchiRepository.saveTamagotchi(updatedTamagotchi)
+
+                val levelsGained = userPreferencesRepository.addXp(completedTask.xpReward)
+                if (levelsGained > 0) {
+                    val reward = levelsGained * 50
+                    val newTamagotchi = tamagotchiRepository.tamagotchiFlow.first().addCurrency(reward)
+                    tamagotchiRepository.saveTamagotchi(newTamagotchi)
+                    _uiState.update { it.copy(levelUpReward = reward) }
+                }
             }
         }
+    }
+
+    fun onLevelUpRewardShown() {
+        _uiState.update { it.copy(levelUpReward = 0) }
     }
 }
