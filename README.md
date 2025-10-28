@@ -110,7 +110,7 @@ The app follows **MVVM** architecture for clean separation of UI, logic, and dat
 
   * `feat: add volume slider to settings screen`
   * `fix: crash when resetting daily tasks`
-
+ 
 ---
 
 ## 📦 MVP Deliverables
@@ -122,6 +122,22 @@ The app follows **MVVM** architecture for clean separation of UI, logic, and dat
 - ✅ Compose UI and MVVM architecture
 - 🟡 Upcoming: Volume slider, polish settings page
 - ⚪ Future: Step tracking, analytics, achievements
+
+---
+
+## 👥 Team Contributions
+
+**Daniel Nelson – Lead Software Engineer**  
+Developed the core application framework and app loop, implemented major MVVM components, fixed critical bugs, and ensured adherence to Android best practices and functionality standards.
+
+**John Hudson – Project Manager & Developer**  
+Oversaw project milestones and coordinated development efforts. Contributed significantly to application logic and UI, including the Store and Inventory systems, while ensuring feature integration across the app.
+
+**Karol Espiritu – UI/UX Developer & Documentation Lead**  
+Designed and implemented numerous UI components and quality-of-life improvements. Authored most of the project’s documentation and created various placeholder art assets.
+
+**Angel Hernandez – Assistant Project Manager & Art Designer**  
+Contributed to project coordination, documentation writing and editing, and task management. Produced a large portion of the app’s current artwork and assisted in visual design consistency.
 
 ---
 
