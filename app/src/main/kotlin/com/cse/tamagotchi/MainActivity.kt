@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.cse.tamagotchi.audio.BackgroundMusicManager
 import androidx.core.content.ContextCompat
 import com.cse.tamagotchi.notifications.NotificationScheduler
 import com.cse.tamagotchi.repository.UserPreferencesRepository
@@ -17,6 +18,7 @@ import com.cse.tamagotchi.ui.theme.TamagotchiTheme
 
 class MainActivity : ComponentActivity() {
 
+    private lateinit var userPrefs: UserPreferencesRepository
     // --- ADD THIS BLOCK: Handles the result of the permission request ---
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -59,8 +61,11 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val userPrefs = UserPreferencesRepository(applicationContext)
         super.onCreate(savedInstanceState)
+        userPrefs = UserPreferencesRepository(applicationContext)
+
+        // Start background music
+        BackgroundMusicManager.start(this)
 
         // --- ADD THIS LINE: Call the function to handle notification permissions ---
         askNotificationPermission()
@@ -71,5 +76,20 @@ class MainActivity : ComponentActivity() {
                 AppNavRoot()
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        BackgroundMusicManager.pause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        BackgroundMusicManager.start(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        BackgroundMusicManager.stop()
     }
 }

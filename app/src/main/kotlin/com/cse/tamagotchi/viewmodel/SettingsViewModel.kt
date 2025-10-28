@@ -2,6 +2,7 @@ package com.cse.tamagotchi.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cse.tamagotchi.audio.BackgroundMusicManager
 import com.cse.tamagotchi.data.AppDatabase
 import com.cse.tamagotchi.model.Tamagotchi
 import com.cse.tamagotchi.repository.TamagotchiRepository
@@ -22,6 +23,16 @@ class SettingsViewModel(
 
     val isDarkMode = userPrefs.isDarkMode
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    val musicVolume = userPrefs.musicVolume
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.25f)
+
+    fun updateMusicVolume(volume: Float) {
+        viewModelScope.launch {
+            userPrefs.updateMusicVolume(volume)
+            BackgroundMusicManager.setVolume(volume)
+        }
+    }
 
     fun toggleDarkMode(enabled: Boolean) {
         viewModelScope.launch {
