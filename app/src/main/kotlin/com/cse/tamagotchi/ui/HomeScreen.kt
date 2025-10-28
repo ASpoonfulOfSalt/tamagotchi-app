@@ -213,7 +213,7 @@ fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
                     }
 
                     // --- STREAK COUNTER MOVED HERE ---
-                    Spacer(Modifier.height(24.dp))
+                    Spacer(Modifier.height(23.dp))
                     Text(
                         text = "🔥 Daily Streak: ${tamagotchi.streakCount}",
                         style = MaterialTheme.typography.bodyLarge,
