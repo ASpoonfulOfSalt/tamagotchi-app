@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -33,11 +35,10 @@ import com.cse.tamagotchi.viewmodel.TaskViewModel
 import java.util.Calendar
 import kotlin.random.Random
 
-
 @Composable
 fun produceIsNightState(): State<Boolean> {
     val isNight = remember { mutableStateOf(false) }
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     val updateTime: () -> Unit = {
         val calendar = Calendar.getInstance()
@@ -52,51 +53,45 @@ fun produceIsNightState(): State<Boolean> {
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-
         updateTime()
-
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-
     return isNight
+}
+
+@Composable
+fun SpeechBubble(message: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.size(120.dp, 80.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_thought_bubble),
+            contentDescription = "Thought bubble",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
+        )
+        Text(
+            text = message,
+            color = Color.Black,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 8.dp, start = 35.dp)
+        )
+    }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
-    tamagotchiViewModel: TamagotchiViewModel, 
-    isDarkMode: Boolean, 
-    userPreferencesRepository: UserPreferencesRepository, 
-    taskViewModel: TaskViewModel
-) {
-    val tamagotchiUiState by tamagotchiViewModel.uiState.collectAsStateWithLifecycle()
-    val taskUiState by taskViewModel.uiState.collectAsStateWithLifecycle()
-    val tamagotchi = tamagotchiUiState.tamagotchi
+fun HomeScreen(viewModel: TamagotchiViewModel, isDarkMode: Boolean) {
+    // Ensure you are using collectAsStateWithLifecycle
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val tamagotchi = uiState.tamagotchi
     val snackbarHostState = remember { SnackbarHostState() }
     var showRenameDialog by rememberSaveable { mutableStateOf(false) }
     var newName by rememberSaveable { mutableStateOf("") }
-
-    val userXp by userPreferencesRepository.userXp.collectAsState(initial = 0)
-    val userLevel by userPreferencesRepository.userLevel.collectAsState(initial = 1)
-
-    var showConfetti by remember { mutableStateOf(false) }
-
-    LaunchedEffect(taskUiState.levelUpReward) {
-        if (taskUiState.levelUpReward > 0) {
-            showConfetti = true
-        }
-    }
-
-    if (taskUiState.levelUpReward > 0) {
-        LevelUpDialog(
-            reward = taskUiState.levelUpReward,
-            onDismiss = { taskViewModel.onLevelUpRewardShown() }
-        )
-    }
-
     val isNight by produceIsNightState()
 
     LaunchedEffect(tamagotchiUiState.userMessage) {
@@ -119,48 +114,76 @@ fun HomeScreen(
                 )
             },
             confirmButton = {
-                Button(
-                    onClick = {
-                        if (newName.isNotBlank()) {
-                            tamagotchiViewModel.renamePet(newName)
-                            showRenameDialog = false
-                            newName = ""
-                        }
+                Button(onClick = {
+                    if (newName.isNotBlank()) {
+                        viewModel.renamePet(newName)
+                        showRenameDialog = false
+                        newName = ""
                     }
-                ) { Text("Save") }
+                }) { Text("Save") }
             },
-            dismissButton = { Button(onClick = { showRenameDialog = false }) { Text("Cancel") } }
+            dismissButton = {
+                Button(onClick = { showRenameDialog = false }) { Text("Cancel") }
+            }
         )
     }
 
     Scaffold(
         containerColor = Color.Transparent,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data ->
-            Snackbar(snackbarData = data, containerColor = MaterialTheme.colorScheme.surfaceVariant, contentColor = MaterialTheme.colorScheme.onSurfaceVariant)
-        } }
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            Image(painter = painterResource(id = if (isNight) R.drawable.ic_night_moon else R.drawable.ic_day_sun), contentDescription = null, modifier = Modifier.padding(24.dp).size(125.dp).align(Alignment.TopEnd))
-            Image(painter = painterResource(id = if (isNight) R.drawable.ic_night_stars else R.drawable.ic_day_clouds), contentDescription = null, modifier = Modifier.padding(24.dp).size(110.dp).align(Alignment.TopStart))
+            Image(
+                painter = painterResource(id = if (isNight) R.drawable.ic_night_moon else R.drawable.ic_day_sun),
+                contentDescription = if (isNight) "Night icon" else "Day icon",
+                modifier = Modifier.padding(24.dp).size(125.dp).align(Alignment.TopEnd)
+            )
+            Image(
+                painter = painterResource(id = if (isNight) R.drawable.ic_night_stars else R.drawable.ic_day_clouds),
+                contentDescription = if (isNight) "Stars icon" else "Clouds icon",
+                modifier = Modifier.padding(24.dp).size(110.dp).align(Alignment.TopStart)
+            )
 
-            if (tamagotchiUiState.isLoading) {
+            if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
                 Column(
                     modifier = Modifier.align(Alignment.Center).padding(16.dp).offset(y = 50.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    XpBar(xp = userXp, level = userLevel, modifier = Modifier.fillMaxWidth(0.8f))
-                    Spacer(Modifier.height(16.dp))
-                    Text(tamagotchi.name, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.clickable { showRenameDialog = true })
+                    Text(
+                        text = tamagotchi.name,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.clickable { showRenameDialog = true }
+                    )
                     Spacer(Modifier.height(8.dp))
-                    Crossfade(targetState = tamagotchi.expression, label = "pet-expression") {
-                        expression ->
-                        Image(painter = painterResource(id = when (expression) {
-                            TamagotchiExpression.HAPPY -> R.drawable.ic_tamagotchi_happy
-                            TamagotchiExpression.NEUTRAL -> R.drawable.ic_tamagotchi_neutral
-                            TamagotchiExpression.SAD -> R.drawable.ic_tamagotchi_sad
-                        }), contentDescription = "Tamagotchi Expression", modifier = Modifier.size(160.dp))
+
+
+                    Box(contentAlignment = Alignment.Center) {
+                        Crossfade(targetState = tamagotchi.expression, label = "pet-expression") { expression ->
+                            Image(
+                                painter = painterResource(
+                                    id = when (expression) {
+                                        TamagotchiExpression.HAPPY -> R.drawable.ic_tamagotchi_happy
+                                        TamagotchiExpression.NEUTRAL -> R.drawable.ic_tamagotchi_neutral
+                                        TamagotchiExpression.SAD -> R.drawable.ic_tamagotchi_sad
+                                    }
+                                ),
+                                contentDescription = "Tamagotchi Expression",
+                                modifier = Modifier.size(160.dp)
+                            )
+                        }
+
+                        uiState.speechBubbleMessage?.let { message ->
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .offset(x = 60.dp, y = (-20).dp)
+                            ) {
+                                SpeechBubble(message = message)
+                            }
+                        }
                     }
                     Spacer(Modifier.height(12.dp))
                     Text("Hunger: ${tamagotchi.hunger}", color = MaterialTheme.colorScheme.onBackground)
