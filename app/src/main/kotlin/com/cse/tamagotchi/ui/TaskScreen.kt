@@ -4,50 +4,22 @@ import android.annotation.SuppressLint
 import android.view.SoundEffectConstants
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.cse.tamagotchi.model.Task
-import com.cse.tamagotchi.ui.theme.DarkModeGreen
-import com.cse.tamagotchi.ui.theme.DarkGrey
-import com.cse.tamagotchi.ui.theme.DestructiveRed
-import com.cse.tamagotchi.ui.theme.LightModeGreen
-import com.cse.tamagotchi.ui.theme.PureWhite
+import com.cse.tamagotchi.ui.theme.*
 import com.cse.tamagotchi.viewmodel.TaskViewModel
 import kotlinx.coroutines.delay
 
@@ -59,7 +31,7 @@ fun TaskScreen(viewModel: TaskViewModel, isDarkMode: Boolean) {
     var showAddTaskDialog by rememberSaveable { mutableStateOf(false) }
     var taskName by rememberSaveable { mutableStateOf("") }
 
-    // Add Task Dialog
+    // === Add Task Dialog ===
     if (showAddTaskDialog) {
         AlertDialog(
             onDismissRequest = { showAddTaskDialog = false },
@@ -100,6 +72,7 @@ fun TaskScreen(viewModel: TaskViewModel, isDarkMode: Boolean) {
         )
     }
 
+    // === Main Layout ===
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -119,17 +92,21 @@ fun TaskScreen(viewModel: TaskViewModel, isDarkMode: Boolean) {
             CountdownTimer(nextResetTime = uiState.nextResetTime)
             Spacer(Modifier.height(16.dp))
 
+            val sortedTasks = uiState.tasks.sortedBy { it.isCompleted } // Completed tasks go to bottom
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
-                items(uiState.tasks) { task ->
+                items(sortedTasks) { task ->
                     TaskItem(
                         task = task,
                         isDarkMode = isDarkMode,
                         onClick = {
                             view.playSoundEffect(SoundEffectConstants.CLICK)
-                            viewModel.completeTask(task.id)
+                            if (!task.isCompleted) {
+                                viewModel.completeTask(task.id)
+                            }
                         }
                     )
                     Spacer(Modifier.height(12.dp))
@@ -152,6 +129,13 @@ fun TaskItem(task: Task, isDarkMode: Boolean, onClick: () -> Unit) {
         else -> baseColor
     }
 
+    val textColor = if (task.isCompleted)
+        (if (isDarkMode) PureWhite.copy(alpha = 0.4f) else DarkGrey.copy(alpha = 0.4f))
+    else
+        (if (isDarkMode) PureWhite else DarkGrey)
+
+    val textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,8 +152,8 @@ fun TaskItem(task: Task, isDarkMode: Boolean, onClick: () -> Unit) {
         ) {
             Text(
                 text = task.title,
-                style = MaterialTheme.typography.titleMedium,
-                color = if (isDarkMode) PureWhite else DarkGrey
+                style = MaterialTheme.typography.titleMedium.copy(textDecoration = textDecoration),
+                color = textColor
             )
 
             Checkbox(
@@ -187,8 +171,8 @@ fun TaskItem(task: Task, isDarkMode: Boolean, onClick: () -> Unit) {
         if (task.description.isNotBlank()) {
             Text(
                 text = task.description,
-                style = MaterialTheme.typography.bodySmall,
-                color = if (isDarkMode) PureWhite.copy(alpha = 0.7f) else DarkGrey.copy(alpha = 0.7f)
+                style = MaterialTheme.typography.bodySmall.copy(textDecoration = textDecoration),
+                color = textColor.copy(alpha = 0.8f)
             )
             Spacer(Modifier.height(6.dp))
         }
@@ -198,7 +182,7 @@ fun TaskItem(task: Task, isDarkMode: Boolean, onClick: () -> Unit) {
             Text(
                 "💰 ${task.currencyReward}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = if (isDarkMode) PureWhite else DarkGrey
+                color = textColor
             )
             Spacer(Modifier.width(12.dp))
 
@@ -207,25 +191,18 @@ fun TaskItem(task: Task, isDarkMode: Boolean, onClick: () -> Unit) {
             Text(
                 stars,
                 style = MaterialTheme.typography.bodyMedium,
-                color = if (isDarkMode) PureWhite else DarkGrey
+                color = textColor
             )
 
-            // Task type label
-            if (task.isDaily) {
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = "Daily",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (isDarkMode) Color(0xFF80D0FF) else Color(0xFF0077CC)
-                )
-            } else {
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = "Weekly",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (isDarkMode) Color(0xFFFFB066) else Color(0xFFFF7700)
-                )
-            }
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = if (task.isDaily) "Daily" else "Weekly",
+                style = MaterialTheme.typography.bodySmall,
+                color = if (task.isDaily)
+                    if (isDarkMode) Color(0xFF80D0FF) else Color(0xFF0077CC)
+                else
+                    if (isDarkMode) Color(0xFFFFB066) else Color(0xFFFF7700)
+            )
         }
     }
 }
