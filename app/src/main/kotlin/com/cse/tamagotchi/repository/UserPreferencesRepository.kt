@@ -23,7 +23,11 @@ class UserPreferencesRepository(private val context: Context) {
         val MUSIC_VOLUME = floatPreferencesKey("music_volume")
         val USER_XP = intPreferencesKey("user_xp")
         val USER_LEVEL = intPreferencesKey("user_level")
+        val HAS_SEEN_ONBOARDING = booleanPreferencesKey("has_seen_onboarding")
     }
+
+    val hasSeenOnboarding: Flow<Boolean> = context.dataStore.data
+        .map { it[PreferencesKeys.HAS_SEEN_ONBOARDING] ?: false }
 
     val isDarkMode: Flow<Boolean> = context.dataStore.data
         .map { it[PreferencesKeys.IS_DARK_MODE] ?: false }
@@ -97,4 +101,12 @@ class UserPreferencesRepository(private val context: Context) {
     suspend fun clearAllData() {
         context.dataStore.edit { it.clear() }
     }
+
+    suspend fun setOnboardingComplete() {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.HAS_SEEN_ONBOARDING] = true
+        }
+    }
 }
+
+
