@@ -64,7 +64,7 @@ fun AppNavRoot() {
 
     // Hoist the dark mode state to the top level
     val isDarkMode by settingsViewModel.isDarkMode.collectAsState(initial = false)
-    val hasSeenOnboarding by userPrefs.hasSeenOnboarding.collectAsState(initial = false)
+    val hasSeenOnboarding by userPrefs.hasSeenOnboarding.collectAsState(initial = true)
 
     // Back button behavior
     BackHandler {
