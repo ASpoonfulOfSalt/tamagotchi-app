@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.cse.tamagotchi.model.StoreItem
 import com.cse.tamagotchi.model.Task
 
-@Database(entities = [StoreItem::class, Task::class], version = 7, exportSchema = false)
+@Database(entities = [StoreItem::class, Task::class], version = 4, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun storeItemDao(): StoreItemDao

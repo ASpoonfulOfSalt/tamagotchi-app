@@ -87,12 +87,7 @@ fun AppNavRoot() {
                 when (page) {
                     0 -> StoreScreen(viewModel = storeViewModel, isDarkMode = isDarkMode)
                     1 -> InventoryScreen(viewModel = storeViewModel)
-                    2 -> HomeScreen(
-                        tamagotchiViewModel = tamagotchiViewModel, 
-                        isDarkMode = isDarkMode, 
-                        userPreferencesRepository = userPrefs, 
-                        taskViewModel = taskViewModel
-                    )
+                    2 -> HomeScreen(viewModel = tamagotchiViewModel, isDarkMode = isDarkMode)
                     3 -> TaskScreen(viewModel = taskViewModel, isDarkMode = isDarkMode)
                     4 -> SettingsScreen(viewModel = settingsViewModel)
                 }
