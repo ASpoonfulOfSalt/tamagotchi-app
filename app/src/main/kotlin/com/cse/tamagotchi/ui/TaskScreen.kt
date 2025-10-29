@@ -1,6 +1,8 @@
 package com.cse.tamagotchi.ui
 
+import android.annotation.SuppressLint
 import android.view.SoundEffectConstants
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -39,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import com.cse.tamagotchi.model.Task
 import com.cse.tamagotchi.ui.theme.DarkModeGreen
 import com.cse.tamagotchi.ui.theme.DarkGrey
 import com.cse.tamagotchi.ui.theme.DestructiveRed
@@ -52,11 +56,10 @@ fun TaskScreen(viewModel: TaskViewModel, isDarkMode: Boolean) {
     val uiState by viewModel.uiState.collectAsState()
     val view = LocalView.current
 
-    // --- NEW: State for controlling the 'Add Task' dialog ---
     var showAddTaskDialog by rememberSaveable { mutableStateOf(false) }
     var taskName by rememberSaveable { mutableStateOf("") }
 
-    // --- NEW: The 'Add Task' Dialog ---
+    // Add Task Dialog
     if (showAddTaskDialog) {
         AlertDialog(
             onDismissRequest = { showAddTaskDialog = false },
@@ -74,7 +77,7 @@ fun TaskScreen(viewModel: TaskViewModel, isDarkMode: Boolean) {
                 Button(
                     onClick = {
                         if (taskName.isNotBlank()) {
-                            viewModel.addTask(taskName) // Call the ViewModel function
+                            viewModel.addTask(taskName)
                             taskName = ""
                             showAddTaskDialog = false
                         }
@@ -83,9 +86,7 @@ fun TaskScreen(viewModel: TaskViewModel, isDarkMode: Boolean) {
                         containerColor = if (isDarkMode) DarkModeGreen else LightModeGreen,
                         contentColor = if (isDarkMode) PureWhite else DarkGrey
                     )
-                ) {
-                    Text("Add")
-                }
+                ) { Text("Add") }
             },
             dismissButton = {
                 Button(
@@ -94,64 +95,136 @@ fun TaskScreen(viewModel: TaskViewModel, isDarkMode: Boolean) {
                         containerColor = DestructiveRed,
                         contentColor = if (isDarkMode) PureWhite else DarkGrey
                     )
-                ) {
-                    Text("Cancel")
-                }
+                ) { Text("Cancel") }
             }
         )
     }
 
-    // --- NEW: Scaffold to hold the FAB ---
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showAddTaskDialog = true },
                 containerColor = if (isDarkMode) DarkModeGreen else LightModeGreen,
                 contentColor = if (isDarkMode) PureWhite else DarkGrey
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Task")
-            }
+            ) { Icon(Icons.Default.Add, contentDescription = "Add Task") }
         },
         containerColor = Color.Transparent
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding) // Use padding from the Scaffold
+                .padding(innerPadding)
                 .padding(16.dp)
         ) {
             CountdownTimer(nextResetTime = uiState.nextResetTime)
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(top = 16.dp)
+                contentPadding = PaddingValues(vertical = 8.dp)
             ) {
-                // The user's provided code uses task.title, so we will use that.
                 items(uiState.tasks) { task ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .clickable {
-                                view.playSoundEffect(SoundEffectConstants.CLICK)
-                                viewModel.completeTask(task.id)
-                            },
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(task.title, color = MaterialTheme.colorScheme.onBackground) // Assuming 'title' is the correct property name
-                        Checkbox(
-                            checked = task.isCompleted,
-                            onCheckedChange = {
-                                view.playSoundEffect(SoundEffectConstants.CLICK)
-                                viewModel.completeTask(task.id)
-                            },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = if (isDarkMode) DarkModeGreen else LightModeGreen
-                            )
-                        )
-                    }
+                    TaskItem(
+                        task = task,
+                        isDarkMode = isDarkMode,
+                        onClick = {
+                            view.playSoundEffect(SoundEffectConstants.CLICK)
+                            viewModel.completeTask(task.id)
+                        }
+                    )
+                    Spacer(Modifier.height(12.dp))
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun TaskItem(task: Task, isDarkMode: Boolean, onClick: () -> Unit) {
+    // Base and special colors
+    val baseColor = if (isDarkMode) Color(0xAA1F1F1F) else Color(0xAAFFFFFF)
+    val dailyColor = if (isDarkMode) Color(0xAA1F2E4F) else Color(0xAAE0F0FF) // blue tint
+    val weeklyColor = if (isDarkMode) Color(0x552E4F1F) else Color(0x55CCFF80) // lime green tint
+
+    val bubbleColor = when {
+        task.isDaily -> dailyColor
+        !task.isDaily -> weeklyColor
+        else -> baseColor
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(horizontal = 4.dp)
+            .background(color = bubbleColor, shape = MaterialTheme.shapes.medium)
+            .padding(16.dp)
+    ) {
+        // Task title + checkbox
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = task.title,
+                style = MaterialTheme.typography.titleMedium,
+                color = if (isDarkMode) PureWhite else DarkGrey
+            )
+
+            Checkbox(
+                checked = task.isCompleted,
+                onCheckedChange = { onClick() },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = if (isDarkMode) DarkModeGreen else LightModeGreen
+                )
+            )
+        }
+
+        Spacer(Modifier.height(4.dp))
+
+        // Task description
+        if (task.description.isNotBlank()) {
+            Text(
+                text = task.description,
+                style = MaterialTheme.typography.bodySmall,
+                color = if (isDarkMode) PureWhite.copy(alpha = 0.7f) else DarkGrey.copy(alpha = 0.7f)
+            )
+            Spacer(Modifier.height(6.dp))
+        }
+
+        // Coins, difficulty stars, and tag
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "💰 ${task.currencyReward}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (isDarkMode) PureWhite else DarkGrey
+            )
+            Spacer(Modifier.width(12.dp))
+
+            val difficulty = (task.currencyReward / 10).coerceIn(1, 5)
+            val stars = "⭐".repeat(difficulty) + "☆".repeat(5 - difficulty)
+            Text(
+                stars,
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (isDarkMode) PureWhite else DarkGrey
+            )
+
+            // Task type label
+            if (task.isDaily) {
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = "Daily",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (isDarkMode) Color(0xFF80D0FF) else Color(0xFF0077CC)
+                )
+            } else {
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = "Weekly",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (isDarkMode) Color(0xFFFFB066) else Color(0xFFFF7700)
+                )
             }
         }
     }
