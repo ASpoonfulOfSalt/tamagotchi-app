@@ -21,7 +21,5 @@ data class Task(
     @ColumnInfo(name = "is_completed")
     var isCompleted: Boolean = false,
     @ColumnInfo(name = "currency_reward")
-    val currencyReward: Int = 10,
-    @ColumnInfo(name = "xp_reward")
-    val xpReward: Int = 20
+    val currencyReward: Int = 10
 )
