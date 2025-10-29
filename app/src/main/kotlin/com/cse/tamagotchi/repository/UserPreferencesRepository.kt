@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +21,8 @@ class UserPreferencesRepository(private val context: Context) {
         val LAST_TASK_RESET_TIME = longPreferencesKey("last_task_reset_time")
         val LAST_WEEKLY_TASK_RESET_TIME = longPreferencesKey("last_weekly_task_reset_time")
         val MUSIC_VOLUME = floatPreferencesKey("music_volume")
+        val USER_XP = intPreferencesKey("user_xp")
+        val USER_LEVEL = intPreferencesKey("user_level")
     }
 
     val isDarkMode: Flow<Boolean> = context.dataStore.data
@@ -33,6 +36,39 @@ class UserPreferencesRepository(private val context: Context) {
 
     val musicVolume: Flow<Float> = context.dataStore.data
         .map { it[PreferencesKeys.MUSIC_VOLUME] ?: 0.25f } // default mid-level
+
+    val userXp: Flow<Int> = context.dataStore.data
+        .map { it[PreferencesKeys.USER_XP] ?: 0 }
+
+    val userLevel: Flow<Int> = context.dataStore.data
+        .map { it[PreferencesKeys.USER_LEVEL] ?: 1 }
+
+    suspend fun addXp(xp: Int): Int {
+        var levelsGained = 0
+        context.dataStore.edit {
+            val currentLevel = it[PreferencesKeys.USER_LEVEL] ?: 1
+            var currentXp = it[PreferencesKeys.USER_XP] ?: 0
+            currentXp += xp
+
+            var xpForNextLevel = 100 * currentLevel
+            var newLevel = currentLevel
+
+            while (currentXp >= xpForNextLevel) {
+                currentXp -= xpForNextLevel
+                newLevel++
+                xpForNextLevel = 100 * newLevel
+            }
+
+            if (newLevel > currentLevel) {
+                levelsGained = newLevel - currentLevel
+                it[PreferencesKeys.USER_LEVEL] = newLevel
+            }
+
+            it[PreferencesKeys.USER_XP] = currentXp
+        }
+
+        return levelsGained
+    }
 
     suspend fun updateMusicVolume(volume: Float) {
         context.dataStore.edit { prefs ->
