@@ -159,14 +159,14 @@ fun HomeScreen(
         } }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            Image(painter = painterResource(id = if (isNight) R.drawable.ic_night_moon else R.drawable.ic_day_sun), contentDescription = null, modifier = Modifier.padding(24.dp).size(125.dp).align(Alignment.TopEnd))
+            Image(painter = painterResource(id = if (isNight) R.drawable.ic_night_moon else R.drawable.ic_day_sun), contentDescription = null, modifier = Modifier.padding(24.dp).size(115.dp).align(Alignment.TopEnd))
             Image(painter = painterResource(id = if (isNight) R.drawable.ic_night_stars else R.drawable.ic_day_clouds), contentDescription = null, modifier = Modifier.padding(24.dp).size(110.dp).align(Alignment.TopStart))
 
             if (tamagotchiUiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
                 Column(
-                    modifier = Modifier.align(Alignment.Center).padding(16.dp).offset(y = 50.dp),
+                    modifier = Modifier.align(Alignment.Center).padding(16.dp).offset(y = 55.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     XpBar(xp = userXp, level = userLevel, modifier = Modifier.fillMaxWidth(0.8f))
