@@ -23,7 +23,7 @@ class TamagotchiRepository(private val context: Context) {
     }
 
     // Config: decay rates (points per hour)
-    private val hungerDecayPerHour = 5.0    // hunger drops 5 points/hour
+    private val hungerDecayPerHour = 3.0    // hunger drops 3 points/hour
     private val waterDecayPerHour = 4.0
     private val happinessDecayPerHour = 2.0
 
