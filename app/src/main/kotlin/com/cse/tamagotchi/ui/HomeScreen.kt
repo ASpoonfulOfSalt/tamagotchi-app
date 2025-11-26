@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -24,8 +23,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cse.tamagotchi.R
-import com.cse.tamagotchi.model.TamagotchiExpression
 import com.cse.tamagotchi.repository.UserPreferencesRepository
+import com.cse.tamagotchi.ui.components.AnimatedPet
 import com.cse.tamagotchi.ui.theme.DarkModeGreen
 import com.cse.tamagotchi.ui.theme.DarkGrey
 import com.cse.tamagotchi.ui.theme.LightModeGreen
@@ -175,18 +174,13 @@ fun HomeScreen(
                     Spacer(Modifier.height(8.dp))
                     Box {
                         Crossfade(targetState = tamagotchi.expression, label = "pet-expression") { expression ->
-                            Image(
-                                painter = painterResource(
-                                    id = when (expression) {
-                                        TamagotchiExpression.HAPPY -> R.drawable.ic_tamagotchi_happy
-                                        TamagotchiExpression.NEUTRAL -> R.drawable.ic_tamagotchi_neutral
-                                        TamagotchiExpression.SAD -> R.drawable.ic_tamagotchi_sad
-                                    }
-                                ),
-                                contentDescription = "Tamagotchi Expression",
-                                modifier = Modifier.size(160.dp)
+                            AnimatedPet(
+                                expression = expression,
+                                modifier = Modifier.size(160.dp),
+                                contentDescription = "Tamagotchi Expression"
                             )
                         }
+
 
                         tamagotchiUiState.speechBubbleMessage?.let { message ->
                             Box(
@@ -318,4 +312,3 @@ data class ConfettiParticle(
         return Triple(Offset(newX, newY), alpha, rotation)
     }
 }
-
