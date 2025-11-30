@@ -130,6 +130,7 @@ private fun StoreItemRow(
             ) {
                 Text(text = item.name, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                 Text(text = "Price: ${item.price} coins", color = MaterialTheme.colorScheme.onBackground)
+                // used for inventory text
                 Text(text = "Owned: ${item.quantity}", color = TextGrey)
             }
             Button(

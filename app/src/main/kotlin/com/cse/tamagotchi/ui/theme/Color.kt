@@ -26,5 +26,5 @@ val DestructiveRed = Color(0xFFEC4C4C)
 val HoverGreen = Color(0xFF78EC7A)
 val HoverBlue = Color(0xFF1717DA)
 
-// inventory text color
+// inventory text color, used in store
 val TextGrey = Color(0xFF808080)
