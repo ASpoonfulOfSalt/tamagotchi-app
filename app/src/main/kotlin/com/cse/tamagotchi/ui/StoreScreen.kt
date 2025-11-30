@@ -19,6 +19,7 @@ import com.cse.tamagotchi.ui.theme.DarkModeGreen
 import com.cse.tamagotchi.ui.theme.DarkGrey
 import com.cse.tamagotchi.ui.theme.LightModeGreen
 import com.cse.tamagotchi.ui.theme.PureWhite
+import com.cse.tamagotchi.ui.theme.TextGrey
 import com.cse.tamagotchi.viewmodel.StoreViewModel
 
 @Composable
@@ -129,6 +130,7 @@ private fun StoreItemRow(
             ) {
                 Text(text = item.name, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                 Text(text = "Price: ${item.price} coins", color = MaterialTheme.colorScheme.onBackground)
+                Text(text = "Owned: ${item.quantity}", color = TextGrey)
             }
             Button(
                 onClick = {

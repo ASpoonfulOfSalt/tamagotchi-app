@@ -25,3 +25,6 @@ val DestructiveRed = Color(0xFFEC4C4C)
 // "current page" nav bar color
 val HoverGreen = Color(0xFF78EC7A)
 val HoverBlue = Color(0xFF1717DA)
+
+// inventory text color
+val TextGrey = Color(0xFF808080)
