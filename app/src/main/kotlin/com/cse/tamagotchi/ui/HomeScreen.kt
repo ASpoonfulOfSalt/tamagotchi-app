@@ -33,6 +33,9 @@ import com.cse.tamagotchi.viewmodel.TamagotchiViewModel
 import com.cse.tamagotchi.viewmodel.TaskViewModel
 import java.util.Calendar
 import kotlin.random.Random
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import kotlinx.coroutines.launch
 
 @Composable
 fun produceIsNightState(): State<Boolean> {
@@ -99,8 +102,34 @@ fun HomeScreen(
 
     val userXp by userPreferencesRepository.userXp.collectAsState(initial = 0)
     val userLevel by userPreferencesRepository.userLevel.collectAsState(initial = 1)
+    val coroutineScope = rememberCoroutineScope()
 
     var showConfetti by remember { mutableStateOf(false) }
+    
+    var showXpMenu by remember { mutableStateOf(false) }
+    var showTriviaGame by remember { mutableStateOf(false) }
+    
+    if (showTriviaGame) {
+        TriviaMinigameDialog(
+            onDismiss = { showTriviaGame = false },
+            onGameFinished = { correctCount ->
+                showTriviaGame = false
+                var xpEarned = correctCount * 10 // 10 XP per correct answer
+                var message = "You earned $xpEarned XP!"
+                
+                // Perfection Bonus
+                if (correctCount == 5) {
+                    xpEarned += 50
+                    message = "Perfect score! +50 Bonus XP! You earned $xpEarned XP!"
+                }
+                
+                coroutineScope.launch {
+                    userPreferencesRepository.addXp(xpEarned)
+                    snackbarHostState.showSnackbar(message)
+                }
+            }
+        )
+    }
 
     LaunchedEffect(taskUiState.levelUpReward) {
         if (taskUiState.levelUpReward > 0) {
@@ -168,7 +197,31 @@ fun HomeScreen(
                     modifier = Modifier.align(Alignment.Center).padding(16.dp).offset(y = 55.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    XpBar(xp = userXp, level = userLevel, modifier = Modifier.fillMaxWidth(0.8f))
+                    Box(modifier = Modifier.fillMaxWidth(0.8f).wrapContentSize(Alignment.TopStart)) {
+                        XpBar(
+                            xp = userXp, 
+                            level = userLevel, 
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { showXpMenu = true }
+                        )
+                        DropdownMenu(
+                            expanded = showXpMenu,
+                            onDismissRequest = { showXpMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Use Book for Minigame") },
+                                onClick = {
+                                    showXpMenu = false
+                                    tamagotchiViewModel.readBook(
+                                        onSuccess = {
+                                            showTriviaGame = true
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    }
                     Spacer(Modifier.height(16.dp))
                     Text(tamagotchi.name, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.clickable { showRenameDialog = true })
                     Spacer(Modifier.height(8.dp))

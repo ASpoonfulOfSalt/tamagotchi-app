@@ -97,6 +97,8 @@ class TamagotchiViewModel(
 
     fun playPet() = useItem("Ball", "So fun!") { it.play() }
 
+    fun readBook(onSuccess: () -> Unit) = useItem("Book", "Knowledge is power!", onSuccess) { it }
+
     fun renamePet(newName: String) = viewModelScope.launch {
         val current = _uiState.value.tamagotchi
         val newT = current.copy(name = newName, lastUpdatedMillis = System.currentTimeMillis())
@@ -120,7 +122,7 @@ class TamagotchiViewModel(
         }
     }
 
-    private fun useItem(itemName: String, speechMessage: String, transform: (Tamagotchi) -> Tamagotchi) {
+    private fun useItem(itemName: String, speechMessage: String, onSuccess: (() -> Unit)? = null, transform: (Tamagotchi) -> Tamagotchi) {
         viewModelScope.launch {
             if (_uiState.value.isLoading) return@launch
 
@@ -131,6 +133,7 @@ class TamagotchiViewModel(
                 val newT = transform(current)
                 repo.saveTamagotchi(newT)
                 showSpeechBubble(speechMessage)
+                onSuccess?.invoke()
             } else {
                 _uiState.update { it.copy(userMessage = "You don't have any ${itemName}s left!") }
             }
