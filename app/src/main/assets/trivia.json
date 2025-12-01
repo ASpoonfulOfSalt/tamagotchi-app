@@ -1,0 +1,377 @@
+[
+  {
+    "question": "What is the capital of France?",
+    "options": ["London", "Berlin", "Paris", "Madrid"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which planet is known as the Red Planet?",
+    "options": ["Venus", "Mars", "Jupiter", "Saturn"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the largest mammal in the world?",
+    "options": ["African Elephant", "Blue Whale", "Giraffe", "Hippopotamus"],
+    "correctIndex": 1
+  },
+  {
+    "question": "In which year did World War II end?",
+    "options": ["1943", "1944", "1945", "1946"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the chemical symbol for Gold?",
+    "options": ["Au", "Ag", "Fe", "Cu"],
+    "correctIndex": 0
+  },
+  {
+    "question": "Who painted the Mona Lisa?",
+    "options": ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the hardest natural substance on Earth?",
+    "options": ["Gold", "Iron", "Diamond", "Platinum"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which ocean is the largest?",
+    "options": ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
+    "correctIndex": 3
+  },
+  {
+    "question": "What is the smallest planet in our solar system?",
+    "options": ["Mercury", "Mars", "Venus", "Pluto"],
+    "correctIndex": 0
+  },
+  {
+    "question": "Who wrote 'Romeo and Juliet'?",
+    "options": ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the capital of Japan?",
+    "options": ["Seoul", "Beijing", "Tokyo", "Bangkok"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which element has the atomic number 1?",
+    "options": ["Helium", "Hydrogen", "Oxygen", "Carbon"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the largest organ in the human body?",
+    "options": ["Heart", "Brain", "Liver", "Skin"],
+    "correctIndex": 3
+  },
+  {
+    "question": "In which country were the first Olympic Games held?",
+    "options": ["Italy", "Greece", "Egypt", "China"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the main ingredient in guacamole?",
+    "options": ["Tomato", "Onion", "Avocado", "Pepper"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which planet is closest to the sun?",
+    "options": ["Venus", "Earth", "Mercury", "Mars"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What year did the Titanic sink?",
+    "options": ["1910", "1912", "1914", "1916"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the largest continent by area?",
+    "options": ["Africa", "North America", "Asia", "Europe"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Who discovered penicillin?",
+    "options": ["Marie Curie", "Alexander Fleming", "Louis Pasteur", "Isaac Newton"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the currency of the United Kingdom?",
+    "options": ["Euro", "Dollar", "Pound Sterling", "Yen"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which animal is known as the King of the Jungle?",
+    "options": ["Tiger", "Lion", "Elephant", "Gorilla"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the boiling point of water at sea level?",
+    "options": ["90°C", "100°C", "110°C", "120°C"],
+    "correctIndex": 1
+  },
+  {
+    "question": "Who is the author of 'Harry Potter' series?",
+    "options": ["J.R.R. Tolkien", "J.K. Rowling", "George R.R. Martin", "Stephen King"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the chemical formula for water?",
+    "options": ["H2O", "CO2", "O2", "NaCl"],
+    "correctIndex": 0
+  },
+  {
+    "question": "Which country is famous for tulips and windmills?",
+    "options": ["Belgium", "Germany", "Netherlands", "Switzerland"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the speed of light?",
+    "options": ["300,000 km/s", "150,000 km/s", "1,000 km/s", "3,000 km/s"],
+    "correctIndex": 0
+  },
+  {
+    "question": "Who was the first person to walk on the moon?",
+    "options": ["Buzz Aldrin", "Yuri Gagarin", "Neil Armstrong", "Michael Collins"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the tallest mountain in the world?",
+    "options": ["K2", "Mount Kilimanjaro", "Mount Everest", "Mount Fuji"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which gas do plants absorb from the atmosphere?",
+    "options": ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the longest river in the world?",
+    "options": ["Amazon River", "Nile River", "Yangtze River", "Mississippi River"],
+    "correctIndex": 1
+  },
+  {
+    "question": "Who painted 'The Starry Night'?",
+    "options": ["Claude Monet", "Vincent van Gogh", "Pablo Picasso", "Salvador Dalí"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the capital of Australia?",
+    "options": ["Sydney", "Melbourne", "Canberra", "Perth"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which planet has the most moons?",
+    "options": ["Jupiter", "Saturn", "Uranus", "Neptune"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the smallest bird in the world?",
+    "options": ["Sparrow", "Hummingbird", "Robin", "Finch"],
+    "correctIndex": 1
+  },
+  {
+    "question": "Who invented the telephone?",
+    "options": ["Thomas Edison", "Alexander Graham Bell", "Nikola Tesla", "Guglielmo Marconi"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the primary gas in the Earth's atmosphere?",
+    "options": ["Oxygen", "Nitrogen", "Carbon Dioxide", "Argon"],
+    "correctIndex": 1
+  },
+  {
+    "question": "Which country is the largest by land area?",
+    "options": ["China", "USA", "Canada", "Russia"],
+    "correctIndex": 3
+  },
+  {
+    "question": "What is the hardest rock?",
+    "options": ["Granite", "Limestone", "Diamond", "Marble"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Who was the first President of the United States?",
+    "options": ["Thomas Jefferson", "Abraham Lincoln", "George Washington", "John Adams"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the chemical symbol for Iron?",
+    "options": ["Ir", "In", "Fe", "F"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which organ purifies blood in the human body?",
+    "options": ["Heart", "Lungs", "Kidney", "Stomach"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the fastest land animal?",
+    "options": ["Lion", "Cheetah", "Leopard", "Tiger"],
+    "correctIndex": 1
+  },
+  {
+    "question": "Which planet is known as the Morning Star?",
+    "options": ["Mars", "Jupiter", "Venus", "Mercury"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Who wrote 'The Odyssey'?",
+    "options": ["Homer", "Virgil", "Socrates", "Plato"],
+    "correctIndex": 0
+  },
+  {
+    "question": "What is the capital of Italy?",
+    "options": ["Venice", "Milan", "Florence", "Rome"],
+    "correctIndex": 3
+  },
+  {
+    "question": "Which element is needed for strong bones?",
+    "options": ["Potassium", "Iron", "Calcium", "Zinc"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the largest desert in the world?",
+    "options": ["Sahara", "Arabian", "Gobi", "Antarctic"],
+    "correctIndex": 3
+  },
+  {
+    "question": "Who discovered America?",
+    "options": ["Leif Erikson", "Christopher Columbus", "Marco Polo", "Vasco da Gama"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the freezing point of water?",
+    "options": ["0°C", "32°C", "-10°C", "10°C"],
+    "correctIndex": 0
+  },
+  {
+    "question": "Which country gave the Statue of Liberty to the USA?",
+    "options": ["Germany", "France", "UK", "Spain"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the main gas found in the air we breathe?",
+    "options": ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Who is known as the Father of Computers?",
+    "options": ["Alan Turing", "Charles Babbage", "Bill Gates", "Steve Jobs"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the capital of Canada?",
+    "options": ["Toronto", "Vancouver", "Montreal", "Ottawa"],
+    "correctIndex": 3
+  },
+  {
+    "question": "Which planet has rings?",
+    "options": ["Mars", "Venus", "Saturn", "Mercury"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the largest bone in the human body?",
+    "options": ["Femur", "Tibia", "Humerus", "Fibula"],
+    "correctIndex": 0
+  },
+  {
+    "question": "Who painted the ceiling of the Sistine Chapel?",
+    "options": ["Leonardo da Vinci", "Raphael", "Michelangelo", "Donatello"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the currency of Japan?",
+    "options": ["Yuan", "Won", "Yen", "Ringgit"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which bird is the symbol of peace?",
+    "options": ["Eagle", "Dove", "Swan", "Owl"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the chemical symbol for Silver?",
+    "options": ["Si", "Sl", "Ag", "Au"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which country is known as the Land of the Rising Sun?",
+    "options": ["China", "South Korea", "Japan", "Thailand"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the smallest continent?",
+    "options": ["Europe", "Antarctica", "South America", "Australia"],
+    "correctIndex": 3
+  },
+  {
+    "question": "Who wrote 'Hamlet'?",
+    "options": ["Charles Dickens", "Mark Twain", "William Shakespeare", "Jane Austen"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the capital of Spain?",
+    "options": ["Barcelona", "Seville", "Madrid", "Valencia"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which planet is the hottest?",
+    "options": ["Mercury", "Venus", "Mars", "Jupiter"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the most spoken language in the world?",
+    "options": ["English", "Spanish", "Mandarin Chinese", "Hindi"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Who discovered gravity?",
+    "options": ["Albert Einstein", "Isaac Newton", "Galileo Galilei", "Nikola Tesla"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the largest island in the world?",
+    "options": ["Greenland", "New Guinea", "Borneo", "Madagascar"],
+    "correctIndex": 0
+  },
+  {
+    "question": "Which instrument has 88 keys?",
+    "options": ["Guitar", "Violin", "Piano", "Flute"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the chemical formula for table salt?",
+    "options": ["H2O", "CO2", "NaCl", "KCl"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Who is the Greek god of the sea?",
+    "options": ["Zeus", "Hades", "Poseidon", "Apollo"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the capital of Brazil?",
+    "options": ["Rio de Janeiro", "Sao Paulo", "Brasilia", "Salvador"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which is the only mammal that can fly?",
+    "options": ["Bat", "Flying Squirrel", "Ostrich", "Penguin"],
+    "correctIndex": 0
+  },
+  {
+    "question": "What is the most abundant element in the universe?",
+    "options": ["Oxygen", "Carbon", "Hydrogen", "Helium"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Who painted 'The Last Supper'?",
+    "options": ["Michelangelo", "Raphael", "Leonardo da Vinci", "Donatello"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the capital of Russia?",
+    "options": ["St. Petersburg", "Moscow", "Kiev", "Minsk"],
+    "correctIndex": 1
+  }
+]

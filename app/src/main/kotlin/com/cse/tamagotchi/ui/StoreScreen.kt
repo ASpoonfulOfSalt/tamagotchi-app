@@ -62,6 +62,7 @@ fun StoreScreen(
             Spacer(modifier = Modifier.height(16.dp))
             StoreItemList(
                 items = uiState.items,
+                inventory = uiState.userInventory,
                 onPurchaseClick = { item ->
                     viewModel.purchaseItem(item)
                 },
@@ -86,6 +87,7 @@ private fun StoreHeader(coins: Int) {
 @Composable
 private fun StoreItemList(
     items: List<StoreItem>,
+    inventory: List<StoreItem>,
     onPurchaseClick: (StoreItem) -> Unit,
     isDarkMode: Boolean
 ) {
@@ -93,7 +95,14 @@ private fun StoreItemList(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(items) { item ->
-            StoreItemRow(item = item, onPurchaseClick = onPurchaseClick, isDarkMode = isDarkMode)
+            // Find quantity from userInventory
+            val ownedQuantity = inventory.find { it.id == item.id }?.quantity ?: 0
+            StoreItemRow(
+                item = item, 
+                quantityOwned = ownedQuantity,
+                onPurchaseClick = onPurchaseClick, 
+                isDarkMode = isDarkMode
+            )
         }
     }
 }
@@ -101,6 +110,7 @@ private fun StoreItemList(
 @Composable
 private fun StoreItemRow(
     item: StoreItem,
+    quantityOwned: Int,
     onPurchaseClick: (StoreItem) -> Unit,
     isDarkMode: Boolean
 ) {
@@ -131,7 +141,7 @@ private fun StoreItemRow(
                 Text(text = item.name, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                 Text(text = "Price: ${item.price} coins", color = MaterialTheme.colorScheme.onBackground)
                 // used for inventory text
-                Text(text = "Owned: ${item.quantity}", color = TextGrey)
+                Text(text = "Owned: $quantityOwned", color = TextGrey)
             }
             Button(
                 onClick = {
