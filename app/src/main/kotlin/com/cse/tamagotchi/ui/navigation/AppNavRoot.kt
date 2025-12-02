@@ -23,7 +23,7 @@ import com.cse.tamagotchi.repository.TaskRepository
 import com.cse.tamagotchi.repository.UserPreferencesRepository
 import com.cse.tamagotchi.ui.HomeScreen
 import com.cse.tamagotchi.ui.InventoryScreen
-import com.cse.tamagotchi.ui.OnboardingScreen
+import com.cse.tamagotchi.ui.onboarding.OnboardingScreen
 import com.cse.tamagotchi.ui.SettingsScreen
 import com.cse.tamagotchi.ui.StoreScreen
 import com.cse.tamagotchi.ui.TaskScreen
