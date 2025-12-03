@@ -17,28 +17,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cse.tamagotchi.data.AppDatabase
-import com.cse.tamagotchi.repository.StatsRepository
-import com.cse.tamagotchi.repository.StoreRepository
-import com.cse.tamagotchi.repository.TamagotchiRepository
-import com.cse.tamagotchi.repository.TaskRepository
-import com.cse.tamagotchi.repository.UserPreferencesRepository
-import com.cse.tamagotchi.ui.HomeScreen
+import com.cse.tamagotchi.repository.*
+import com.cse.tamagotchi.ui.*
 import com.cse.tamagotchi.ui.onboarding.OnboardingScreen
-import com.cse.tamagotchi.ui.SettingsScreen
-import com.cse.tamagotchi.ui.StatsScreen
-import com.cse.tamagotchi.ui.StoreScreen
-import com.cse.tamagotchi.ui.TaskScreen
 import com.cse.tamagotchi.ui.theme.TamagotchiTheme
-import com.cse.tamagotchi.viewmodel.SettingsViewModel
-import com.cse.tamagotchi.viewmodel.SettingsViewModelFactory
-import com.cse.tamagotchi.viewmodel.StatsViewModel
-import com.cse.tamagotchi.viewmodel.StatsViewModelFactory
-import com.cse.tamagotchi.viewmodel.StoreViewModel
-import com.cse.tamagotchi.viewmodel.StoreViewModelFactory
-import com.cse.tamagotchi.viewmodel.TamagotchiViewModel
-import com.cse.tamagotchi.viewmodel.TamagotchiViewModelFactory
-import com.cse.tamagotchi.viewmodel.TaskViewModel
-import com.cse.tamagotchi.viewmodel.TaskViewModelFactory
+import com.cse.tamagotchi.viewmodel.*
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -48,32 +31,41 @@ fun AppNavRoot() {
     val scope = rememberCoroutineScope()
     val activity = LocalContext.current as? Activity
     val application = LocalContext.current.applicationContext as Application
+
     val database = AppDatabase.getDatabase(application)
     val userPrefs = UserPreferencesRepository(application)
-    val storeDao = database.storeItemDao()
-    val storeRepository = StoreRepository(storeDao)
-    val taskDao = database.taskDao()
-    val taskRepository = TaskRepository(application, taskDao)
+
+    val storeRepository = StoreRepository(database.storeItemDao())
+    val taskRepository = TaskRepository(application, database.taskDao())
     val tamagotchiRepository = TamagotchiRepository(application)
-    val statsRepository = StatsRepository(context = application)
+    val statsRepository = StatsRepository(application)
 
-    // Create VMs here with factories
-    val tamagotchiViewModel: TamagotchiViewModel = viewModel(factory = TamagotchiViewModelFactory(tamagotchiRepository, storeRepository))
-    val storeViewModel: StoreViewModel = viewModel(factory = StoreViewModelFactory(storeRepository, tamagotchiRepository))
-    val taskViewModel: TaskViewModel = viewModel(
-        factory = TaskViewModelFactory(taskRepository, tamagotchiRepository, userPrefs, statsRepository)
-    )
-    val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory(
-        userPrefs, database, taskRepository, tamagotchiRepository))
+    val tamagotchiViewModel: TamagotchiViewModel =
+        viewModel(factory = TamagotchiViewModelFactory(tamagotchiRepository, storeRepository))
+
+    val storeViewModel: StoreViewModel =
+        viewModel(factory = StoreViewModelFactory(storeRepository, tamagotchiRepository))
+
+    val taskViewModel: TaskViewModel =
+        viewModel(factory = TaskViewModelFactory(taskRepository, tamagotchiRepository, userPrefs, statsRepository))
+
+    val settingsViewModel: SettingsViewModel =
+        viewModel(factory = SettingsViewModelFactory(userPrefs, database, taskRepository, tamagotchiRepository))
+
     val statsViewModel: StatsViewModel = viewModel(
-        factory = StatsViewModelFactory(statsRepository, tamagotchiRepository)
+        factory = StatsViewModelFactory(
+            statsRepository = statsRepository,
+            userPrefs = userPrefs,
+            storeRepository = storeRepository,
+            tamagotchiRepository = tamagotchiRepository
+        )
     )
 
-    // Hoist the dark mode state to the top level
+
+    // Hoist dark mode state
     val isDarkMode by settingsViewModel.isDarkMode.collectAsState(initial = false)
     val hasSeenOnboarding by userPrefs.hasSeenOnboarding.collectAsState(initial = true)
 
-    // Back button behavior
     BackHandler {
         if (pagerState.currentPage != 2) {
             scope.launch { pagerState.animateScrollToPage(2) }
@@ -105,25 +97,23 @@ fun AppNavRoot() {
                     modifier = Modifier.padding(innerPadding)
                 ) { page ->
                     when (page) {
-                        0 -> StatsScreen(
-                            tamagotchiViewModel = tamagotchiViewModel,
-                            taskViewModel = taskViewModel,
-                            userPrefs = userPrefs,
-                            viewModel = statsViewModel
-                        )
+                        0 -> StatsScreen(viewModel = statsViewModel)
+
                         1 -> StoreScreen(viewModel = storeViewModel, isDarkMode = isDarkMode)
+
                         2 -> HomeScreen(
                             tamagotchiViewModel = tamagotchiViewModel,
                             isDarkMode = isDarkMode,
                             userPreferencesRepository = userPrefs,
                             taskViewModel = taskViewModel
                         )
+
                         3 -> TaskScreen(viewModel = taskViewModel, isDarkMode = isDarkMode)
+
                         4 -> SettingsScreen(viewModel = settingsViewModel)
                     }
                 }
             }
         }
     }
-
 }

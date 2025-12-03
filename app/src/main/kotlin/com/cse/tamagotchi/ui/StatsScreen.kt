@@ -1,67 +1,93 @@
 package com.cse.tamagotchi.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.cse.tamagotchi.ui.stats.LegendaryRewardDialog
+import com.cse.tamagotchi.ui.stats.StatsBubbleGrid
+import com.cse.tamagotchi.ui.stats.StatsHeader
+import com.cse.tamagotchi.ui.stats.StatsMiniChart
+import com.cse.tamagotchi.ui.stats.StatsProgressRing
 import com.cse.tamagotchi.viewmodel.StatsViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 @Composable
 fun StatsScreen(
-    tamagotchiViewModel: com.cse.tamagotchi.viewmodel.TamagotchiViewModel,
-    taskViewModel: com.cse.tamagotchi.viewmodel.TaskViewModel,
-    userPrefs: com.cse.tamagotchi.repository.UserPreferencesRepository,
     viewModel: StatsViewModel
 ) {
+
     val stats by viewModel.uiState.collectAsState()
+
+    var showPopup by remember { mutableStateOf(false) }
+
+    LaunchedEffect(stats.showLegendaryPopup) {
+        if (stats.showLegendaryPopup) {
+            showPopup = true
+        }
+    }
+
+
+    // Keep best streak in sync with current streak
+    LaunchedEffect(stats.currentStreak, stats.bestStreak) {
+        if (stats.currentStreak > stats.bestStreak) {
+            viewModel.updateBestStreak(stats.currentStreak)
+        }
+    }
+
+    val installDateText = remember(stats.installDate) {
+        if (stats.installDate == 0L) {
+            "Just started!"
+        } else {
+            SimpleDateFormat("MMM dd, yyyy", Locale.US).format(Date(stats.installDate))
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
+        StatsHeader()
+
         Text(
-            "Your Progress",
-            style = MaterialTheme.typography.headlineMedium
+            text = "Trends",
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onBackground
         )
 
-        StatsCard(title = "Days Used", value = stats.daysUsed.toString())
-        StatsCard(title = "Best Streak", value = stats.bestStreak.toString())
-        StatsCard(title = "Tasks Completed", value = stats.totalTasksCompleted.toString())
-        StatsCard(title = "Coins Earned", value = stats.totalCoinsEarned.toString())
-        StatsCard(
-            title = "Install Date",
-            value = SimpleDateFormat("MMM dd, yyyy", Locale.US).format(Date(stats.installDate))
+        StatsProgressRing(
+            streak = stats.currentStreak,
+            bestStreak = stats.bestStreak
         )
-        StatsCard(
-            title = "Time Played",
-            value = "${stats.totalMinutesUsed} min"
-        )
-    }
-}
 
-@Composable
-fun StatsCard(title: String, value: String) {
-    Surface(
-        shape = RoundedCornerShape(16.dp),
-        tonalElevation = 4.dp,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Text(title, style = MaterialTheme.typography.titleMedium)
-            Text(
-                value,
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
+        // XP bar: progress toward next level
+        val xpForNextLevel = 100 * stats.level
+
+        StatsMiniChart(
+            title = "XP to Next Level",
+            current = stats.xp,
+            max = xpForNextLevel
+        )
+
+        StatsBubbleGrid(
+            stats = stats,
+            installDateText = installDateText,
+            bestStreak = stats.bestStreak
+        )
+
+        // Displays the Legendary Reward Popup! Free money.
+        if (showPopup) {
+            LegendaryRewardDialog(onDismiss = { showPopup = false })
         }
+
     }
 }
