@@ -16,11 +16,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cse.tamagotchi.model.Hat
 import com.cse.tamagotchi.model.StoreItem
-import com.cse.tamagotchi.ui.theme.DarkModeGreen
 import com.cse.tamagotchi.ui.theme.DarkGrey
+import com.cse.tamagotchi.ui.theme.DarkModeGreen
+import com.cse.tamagotchi.ui.theme.DestructiveRed
 import com.cse.tamagotchi.ui.theme.LightModeGreen
 import com.cse.tamagotchi.ui.theme.PureWhite
-import com.cse.tamagotchi.ui.theme.TextGrey
 import com.cse.tamagotchi.viewmodel.StoreViewModel
 
 @Composable
@@ -201,7 +201,7 @@ private fun StoreItemRow(
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor =
-                        if (isEquipped) TextGrey
+                        if (isEquipped) DestructiveRed
                         else if (isDarkMode) DarkModeGreen else LightModeGreen,
                     contentColor = if (isDarkMode) PureWhite else DarkGrey
                 )
