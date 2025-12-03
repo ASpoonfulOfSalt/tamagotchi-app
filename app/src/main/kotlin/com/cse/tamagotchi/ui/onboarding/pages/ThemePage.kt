@@ -24,7 +24,11 @@ fun ThemePage(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Choose your theme", style = MaterialTheme.typography.headlineSmall)
+        Text(
+            text = "Choose your theme!",
+            color = if (prefersDark) Color.White else Color.Black,
+            style = MaterialTheme.typography.headlineMedium
+        )
         Spacer(Modifier.height(32.dp))
 
         Row(
@@ -36,6 +40,7 @@ fun ThemePage(
                 selected = !prefersDark,
                 emoji = "☀️",
                 label = "Light",
+                darkMode = prefersDark,
                 onClick = { onSelect(false) }
             )
 
@@ -44,6 +49,7 @@ fun ThemePage(
                 selected = prefersDark,
                 emoji = "🌙",
                 label = "Dark",
+                darkMode = prefersDark,
                 onClick = { onSelect(true) }
             )
         }
@@ -55,6 +61,7 @@ fun ThemeOption(
     selected: Boolean,
     emoji: String,
     label: String,
+    darkMode: Boolean,
     onClick: () -> Unit
 ) {
     val scale by animateFloatAsState(if (selected) 1.3f else 1f)
@@ -71,8 +78,16 @@ fun ThemeOption(
             .background(bg)
             .padding(12.dp)
     ) {
-        Text(emoji, fontSize = 48.sp)
+        Text(
+            emoji,
+            fontSize = 48.sp,
+            color = if (darkMode) Color.White else Color.Unspecified
+        )
         Spacer(Modifier.height(8.dp))
-        Text(label)
+        Text(
+            text = label,
+            color = if (darkMode) Color.White else Color.Black
+        )
+
     }
 }

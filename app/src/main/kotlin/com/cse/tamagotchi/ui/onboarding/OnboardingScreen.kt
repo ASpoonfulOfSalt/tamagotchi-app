@@ -23,7 +23,7 @@ fun OnboardingScreen(
         { HowItWorksPage() },
         { NamePage(petName) { petName = it } },
         { ThemePage(prefersDark) { prefersDark = it } },
-        { FinishPage { onComplete(petName, prefersDark) } }
+        { FinishPage(prefersDark) { onComplete(petName, prefersDark) } } // Added prefersDark here
     )
 
     OnboardingBackground(prefersDark = prefersDark) {

@@ -5,20 +5,33 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FinishPage(onFinish: () -> Unit) {
+fun FinishPage(
+    prefersDark: Boolean,
+    onFinish: () -> Unit
+) {
     Column(
         Modifier.fillMaxSize().padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("You're all set!", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            "You're all set!",
+            style = MaterialTheme.typography.headlineMedium,
+            color = if (prefersDark) Color.White else Color.Black
+        )
         Spacer(Modifier.height(12.dp))
-        Text("Your HabitGotchi can't wait to meet you!")
+        Text(
+            "Your HabitGotchi can't wait to meet you!",
+            color = if (prefersDark) Color.White else Color.Black
+        )
         Spacer(Modifier.height(24.dp))
 
-        Button(onClick = onFinish) { Text("Start Playing") }
+        Button(onClick = onFinish) {
+            Text("Start Playing")
+        }
     }
 }
