@@ -1,5 +1,6 @@
 package com.cse.tamagotchi.ui.theme
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 
 // optional light mode colors
@@ -25,3 +26,5 @@ val DestructiveRed = Color(0xFFEC4C4C)
 // "current page" nav bar color
 val HoverGreen = Color(0xFF78EC7A)
 val HoverBlue = Color(0xFF1717DA)
+
+
