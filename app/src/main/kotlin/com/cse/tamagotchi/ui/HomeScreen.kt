@@ -225,7 +225,9 @@ fun HomeScreen(
                     Spacer(Modifier.height(16.dp))
                     Text(tamagotchi.name, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.clickable { showRenameDialog = true })
                     Spacer(Modifier.height(8.dp))
-                    Box {
+                    
+                    // Pet Box Container
+                    Box(contentAlignment = Alignment.TopCenter) {
                         Crossfade(targetState = tamagotchi.expression, label = "pet-expression") { expression ->
                             AnimatedPet(
                                 expression = expression,
@@ -234,6 +236,18 @@ fun HomeScreen(
                             )
                         }
 
+                        // Hat Layer
+                        tamagotchi.currentHat?.let { hat ->
+                            Image(
+                                painter = painterResource(id = hat.drawableRes),
+                                contentDescription = "Hat",
+                                modifier = Modifier
+                                    .size(80.dp) // smaller hat sizes. adjust as needed.
+                                    .offset(y = hat.yOffset.dp) // check y-direction of hat
+                                    .offset(x = hat.xOffset.dp) // check x-direction of hat
+
+                            )
+                        }
 
                         tamagotchiUiState.speechBubbleMessage?.let { message ->
                             Box(

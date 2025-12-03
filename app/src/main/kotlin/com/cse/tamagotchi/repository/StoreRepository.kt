@@ -9,11 +9,20 @@ import kotlinx.coroutines.flow.map
 class StoreRepository(private val storeItemDao: StoreItemDao) {
     
     private val availableItems: List<StoreItem> = listOf(
+        // Consumables
         StoreItem(id = 1, name = "Apple", price = 10, iconRes = R.drawable.ic_food_apple),
         StoreItem(id = 2, name = "Book", price = 50, iconRes = R.drawable.ic_play_book),
         StoreItem(id = 3, name = "Ball", price = 30, iconRes = R.drawable.ic_play_ball),
         StoreItem(id = 4, name = "Water", price = 5, iconRes = R.drawable.ic_food_water),
-        StoreItem(id = 5, name = "Cake", price = 100, iconRes = R.drawable.ic_food_cake)
+        StoreItem(id = 5, name = "Cake", price = 100, iconRes = R.drawable.ic_food_cake),
+        
+        // Hats
+        StoreItem(id = 10, name = "Baseball Cap", price = 150, iconRes = R.drawable.ic_hat_baseball),
+        StoreItem(id = 11, name = "Beanie", price = 200, iconRes = R.drawable.ic_hat_beanie),
+        StoreItem(id = 12, name = "Bucket Hat", price = 175, iconRes = R.drawable.ic_hat_bucket),
+        StoreItem(id = 13, name = "Cowboy Hat", price = 250, iconRes = R.drawable.ic_hat_cowboy),
+        StoreItem(id = 14, name = "Party Hat", price = 120, iconRes = R.drawable.ic_hat_party),
+        StoreItem(id = 15, name = "Top Hat", price = 300, iconRes = R.drawable.ic_hat_top)
     )
 
     fun getAvailableItems(): List<StoreItem> = availableItems

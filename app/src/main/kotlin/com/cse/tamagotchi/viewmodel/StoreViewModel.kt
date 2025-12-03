@@ -2,6 +2,7 @@ package com.cse.tamagotchi.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cse.tamagotchi.model.Hat
 import com.cse.tamagotchi.model.StoreItem
 import com.cse.tamagotchi.repository.StoreRepository
 import com.cse.tamagotchi.repository.TamagotchiRepository
@@ -16,7 +17,8 @@ data class StoreUiState(
     val items: List<StoreItem> = emptyList(),
     val userCoins: Int = 0,
     val userInventory: List<StoreItem> = emptyList(),
-    val purchaseMessage: String? = null
+    val purchaseMessage: String? = null,
+    val currentHat: Hat? = null
 )
 
 class StoreViewModel(
@@ -30,7 +32,7 @@ class StoreViewModel(
     init {
         loadStoreItems()
         loadUserInventory()
-        loadUserCoins()
+        loadTamagotchiData()
     }
 
     private fun loadStoreItems() {
@@ -48,10 +50,15 @@ class StoreViewModel(
         }
     }
 
-    private fun loadUserCoins() {
+    private fun loadTamagotchiData() {
         viewModelScope.launch {
             tamagotchiRepository.tamagotchiFlow.collect { tamagotchi ->
-                _uiState.update { it.copy(userCoins = tamagotchi.currency) }
+                _uiState.update { 
+                    it.copy(
+                        userCoins = tamagotchi.currency,
+                        currentHat = tamagotchi.currentHat
+                    ) 
+                }
             }
         }
     }
@@ -72,6 +79,42 @@ class StoreViewModel(
                     it.copy(purchaseMessage = "Not enough coins to buy ${item.name}.")
                 }
             }
+        }
+    }
+
+    fun equipHat(item: StoreItem) {
+        val hat = mapItemToHat(item)
+        if (hat != null) {
+            viewModelScope.launch {
+                val tamagotchi = tamagotchiRepository.tamagotchiFlow.first()
+                // Toggle: If already wearing this hat, unequip it. Otherwise, equip it.
+                val newTamagotchi = if (tamagotchi.currentHat == hat) {
+                    tamagotchi.unequipHat()
+                } else {
+                    tamagotchi.equipHat(hat)
+                }
+                tamagotchiRepository.saveTamagotchi(newTamagotchi)
+                
+                _uiState.update { 
+                    it.copy(purchaseMessage = if (newTamagotchi.currentHat == hat) "Equipped ${item.name}!" else "Unequipped ${item.name}!")
+                }
+            }
+        }
+    }
+
+    fun getHatFromItem(item: StoreItem): Hat? {
+        return mapItemToHat(item)
+    }
+
+    private fun mapItemToHat(item: StoreItem): Hat? {
+        return when (item.name) {
+            "Baseball Cap" -> Hat.BASEBALL
+            "Beanie" -> Hat.BEANIE
+            "Bucket Hat" -> Hat.BUCKET
+            "Cowboy Hat" -> Hat.COWBOY
+            "Party Hat" -> Hat.PARTY
+            "Top Hat" -> Hat.TOP
+            else -> null
         }
     }
 
