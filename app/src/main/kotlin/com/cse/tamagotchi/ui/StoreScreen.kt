@@ -16,11 +16,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cse.tamagotchi.model.Hat
 import com.cse.tamagotchi.model.StoreItem
-import com.cse.tamagotchi.ui.theme.DarkModeGreen
 import com.cse.tamagotchi.ui.theme.DarkGrey
+import com.cse.tamagotchi.ui.theme.DarkModeGreen
+import com.cse.tamagotchi.ui.theme.DestructiveRed
 import com.cse.tamagotchi.ui.theme.LightModeGreen
 import com.cse.tamagotchi.ui.theme.PureWhite
-import com.cse.tamagotchi.ui.theme.TextGrey
 import com.cse.tamagotchi.viewmodel.StoreViewModel
 
 @Composable
@@ -144,9 +144,7 @@ private fun StoreItemRow(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
-        )
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Row(
             modifier = Modifier
@@ -160,31 +158,51 @@ private fun StoreItemRow(
                 contentDescription = item.name,
                 modifier = Modifier.size(48.dp)
             )
+
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 12.dp)
             ) {
-                Text(text = item.name, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                
-                if (quantityOwned > 0) {
-                    Text(text = "Owned: $quantityOwned", color = TextGrey)
-                } else {
-                    Text(text = "Price: ${item.price} coins", color = MaterialTheme.colorScheme.onBackground)
+                Text(
+                    text = item.name,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+                    // Price badge (always shown)
+                    Badge(
+                        containerColor = if (isDarkMode) DarkModeGreen else LightModeGreen,
+                        contentColor = Color.Black
+                    ) {
+                        Text("${item.price} coins")
+                    }
+
+                    // Owned badge (only if > 0)
+                    if (quantityOwned > 0) {
+                        Badge(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ) {
+                            Text("Owned: $quantityOwned")
+                        }
+                    }
                 }
             }
-            
+
             Button(
                 onClick = {
                     view.playSoundEffect(SoundEffectConstants.CLICK)
-                    if (canEquip) {
-                        onEquipClick(item)
-                    } else {
-                        onPurchaseClick(item)
-                    }
+                    if (canEquip) onEquipClick(item) else onPurchaseClick(item)
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isEquipped) TextGrey else if (isDarkMode) DarkModeGreen else LightModeGreen,
+                    containerColor =
+                        if (isEquipped) DestructiveRed
+                        else if (isDarkMode) DarkModeGreen else LightModeGreen,
                     contentColor = if (isDarkMode) PureWhite else DarkGrey
                 )
             ) {
@@ -199,3 +217,4 @@ private fun StoreItemRow(
         }
     }
 }
+
