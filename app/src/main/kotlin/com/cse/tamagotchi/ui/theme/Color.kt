@@ -27,4 +27,20 @@ val DestructiveRed = Color(0xFFEC4C4C)
 val HoverGreen = Color(0xFF78EC7A)
 val HoverBlue = Color(0xFF1717DA)
 
+// STATS SCREEN COLORS (High contrast)
+
+// Light mode chart colors
+val StatsChartBaseLight = Color(0xFFCCE6FF)     // soft sky blue
+val StatsChartFillLight = Color(0xFF0077FF)     // vivid blue
+
+// Dark mode chart colors
+val StatsChartBaseDark = Color(0xFF3A3F55)      // muted cool grey
+val StatsChartFillDark = Color(0xFF6EA8FF)      // bright neon blue
+
+// XP Progress bar fill (universal)
+val XpFill = Color(0xFFFFC107)                  // gold
+val XpBase = Color(0xFFFFECB3)                  // pale gold
+
+
+
 

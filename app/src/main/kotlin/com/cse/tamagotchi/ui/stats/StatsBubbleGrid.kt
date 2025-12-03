@@ -36,17 +36,17 @@ fun StatsBubbleGrid(
             label = "Hats Owned",
             emoji = "🎩",
             value = stats.hatCount.toString(),
-            subtitle = "Because *someone's* gotta keep count"
+            subtitle = "Because someone has to keep count"
         ),
         StatBubbleData(
             label = "Current Streak",
-            emoji = "🔁",
+            emoji = "🔥",
             value = stats.currentStreak.toString(),
-            subtitle = "How many days in a row!"
+            subtitle = "Look at you go!"
         ),
         StatBubbleData(
             label = "Best Streak",
-            emoji = "🔥",
+            emoji = "🏆",
             value = bestStreak.toString(),
             subtitle = "Your all-time record"
         ),

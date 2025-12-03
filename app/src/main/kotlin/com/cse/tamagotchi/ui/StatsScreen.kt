@@ -58,11 +58,15 @@ fun StatsScreen(
             bestStreak = stats.bestStreak
         )
 
+        // XP bar: progress toward next level
+        val xpForNextLevel = 100 * stats.level
+
         StatsMiniChart(
-            title = "XP Progress",
+            title = "XP to Next Level",
             current = stats.xp,
-            max = max(stats.xp, 100)
+            max = xpForNextLevel
         )
+
 
         StatsBubbleGrid(
             stats = stats,

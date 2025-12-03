@@ -1,15 +1,17 @@
 package com.cse.tamagotchi.ui.stats
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.cse.tamagotchi.ui.theme.StatsChartBaseDark
+import com.cse.tamagotchi.ui.theme.StatsChartBaseLight
+import com.cse.tamagotchi.ui.theme.StatsChartFillDark
+import com.cse.tamagotchi.ui.theme.StatsChartFillLight
 
 @Composable
 fun StatsMiniChart(
@@ -17,48 +19,63 @@ fun StatsMiniChart(
     current: Int,
     max: Int
 ) {
-    val bgColor = MaterialTheme.colorScheme.surfaceVariant
-    val fgColor = MaterialTheme.colorScheme.primary
-    val titleColor = MaterialTheme.colorScheme.onBackground
-    val valueColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val dark = isSystemInDarkTheme()
+
+    val baseColor =
+        if (dark) StatsChartBaseDark else StatsChartBaseLight
+
+    val fillColor =
+        if (dark) StatsChartFillDark else StatsChartFillLight
+
+    val textColor = MaterialTheme.colorScheme.onBackground
+
+    val fraction = if (max <= 0) 0f else (current.toFloat() / max).coerceIn(0f, 1f)
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
-            color = titleColor
+            color = textColor
         )
-        Spacer(Modifier.height(6.dp))
 
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(26.dp)
         ) {
-            val progress = (current.toFloat() / max).coerceIn(0f, 1f)
-            val barWidth = size.width * progress
+            val cornerRadius = 20f
+            val barWidth = size.width * fraction
 
+            // Background bar
             drawRoundRect(
-                color = bgColor,
+                color = baseColor,
                 size = size,
-                cornerRadius = androidx.compose.ui.geometry.CornerRadius(20f, 20f)
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(
+                    cornerRadius,
+                    cornerRadius
+                )
             )
 
+            // Filled portion
             drawRoundRect(
-                color = fgColor,
+                color = fillColor,
                 size = androidx.compose.ui.geometry.Size(barWidth, size.height),
-                cornerRadius = androidx.compose.ui.geometry.CornerRadius(20f, 20f)
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(
+                    cornerRadius,
+                    cornerRadius
+                )
             )
         }
 
-        Spacer(Modifier.height(4.dp))
-
         Text(
-            text = "$current / $max min",
+            text = "$current / $max XP to next level",
             style = MaterialTheme.typography.bodySmall,
-            color = valueColor
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
