@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.cse.tamagotchi.model.Hat
 import com.cse.tamagotchi.model.StoreItem
 import com.cse.tamagotchi.ui.theme.DarkModeGreen
 import com.cse.tamagotchi.ui.theme.DarkGrey
@@ -63,8 +64,18 @@ fun StoreScreen(
             StoreItemList(
                 items = uiState.items,
                 inventory = uiState.userInventory,
+                currentHat = uiState.currentHat, // checks current hat type (if any)
                 onPurchaseClick = { item ->
                     viewModel.purchaseItem(item)
+                },
+                onEquipClick = { item ->
+                    viewModel.equipHat(item)
+                },
+                checkIfHat = { item ->
+                    viewModel.getHatFromItem(item) != null
+                },
+                getHatFromItem = { item ->
+                    viewModel.getHatFromItem(item)
                 },
                 isDarkMode = isDarkMode
             )
@@ -88,7 +99,11 @@ private fun StoreHeader(coins: Int) {
 private fun StoreItemList(
     items: List<StoreItem>,
     inventory: List<StoreItem>,
+    currentHat: Hat?,
     onPurchaseClick: (StoreItem) -> Unit,
+    onEquipClick: (StoreItem) -> Unit,
+    checkIfHat: (StoreItem) -> Boolean,
+    getHatFromItem: (StoreItem) -> Hat?,
     isDarkMode: Boolean
 ) {
     LazyColumn(
@@ -97,10 +112,15 @@ private fun StoreItemList(
         items(items) { item ->
             // Find quantity from userInventory
             val ownedQuantity = inventory.find { it.id == item.id }?.quantity ?: 0
+            
             StoreItemRow(
                 item = item, 
                 quantityOwned = ownedQuantity,
-                onPurchaseClick = onPurchaseClick, 
+                currentHat = currentHat,
+                onPurchaseClick = onPurchaseClick,
+                onEquipClick = onEquipClick,
+                isHat = checkIfHat(item),
+                hatType = getHatFromItem(item),
                 isDarkMode = isDarkMode
             )
         }
@@ -111,10 +131,17 @@ private fun StoreItemList(
 private fun StoreItemRow(
     item: StoreItem,
     quantityOwned: Int,
+    currentHat: Hat?,
     onPurchaseClick: (StoreItem) -> Unit,
+    onEquipClick: (StoreItem) -> Unit,
+    isHat: Boolean,
+    hatType: Hat?,
     isDarkMode: Boolean
 ) {
     val view = LocalView.current
+    val isEquipped = isHat && (currentHat == hatType)
+    val canEquip = isHat && quantityOwned > 0
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -139,21 +166,35 @@ private fun StoreItemRow(
                     .padding(horizontal = 12.dp)
             ) {
                 Text(text = item.name, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
-                Text(text = "Price: ${item.price} coins", color = MaterialTheme.colorScheme.onBackground)
-                // used for inventory text
-                Text(text = "Owned: $quantityOwned", color = TextGrey)
+                
+                if (quantityOwned > 0) {
+                    Text(text = "Owned: $quantityOwned", color = TextGrey)
+                } else {
+                    Text(text = "Price: ${item.price} coins", color = MaterialTheme.colorScheme.onBackground)
+                }
             }
+            
             Button(
                 onClick = {
                     view.playSoundEffect(SoundEffectConstants.CLICK)
-                    onPurchaseClick(item)
+                    if (canEquip) {
+                        onEquipClick(item)
+                    } else {
+                        onPurchaseClick(item)
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isDarkMode) DarkModeGreen else LightModeGreen,
+                    containerColor = if (isEquipped) TextGrey else if (isDarkMode) DarkModeGreen else LightModeGreen,
                     contentColor = if (isDarkMode) PureWhite else DarkGrey
                 )
             ) {
-                Text("Buy")
+                Text(
+                    text = when {
+                        isEquipped -> "Unequip"
+                        canEquip -> "Equip"
+                        else -> "Buy"
+                    }
+                )
             }
         }
     }

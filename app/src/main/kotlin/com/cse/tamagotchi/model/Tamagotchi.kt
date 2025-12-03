@@ -20,7 +20,8 @@ data class Tamagotchi(
     val currency: Int = 100,   // Starting currency
     val streakCount: Int = 0, // Daily login streak
     val lastUpdatedMillis: Long = System.currentTimeMillis(),
-    val lastDayOpened: Long = 0L // Add this line
+    val lastDayOpened: Long = 0L, // Add this line
+    val currentHat: Hat? = null // The currently equipped hat
 ) {
     val expression: TamagotchiExpression
         get() {
@@ -42,6 +43,10 @@ data class Tamagotchi(
 
     fun addCurrency(amount: Int): Tamagotchi =
         copy(currency = currency + amount)
+
+    fun equipHat(hat: Hat): Tamagotchi = copy(currentHat = hat) // checks for hat type (if any)
+    
+    fun unequipHat(): Tamagotchi = copy(currentHat = null)
 
     fun applyDecay(hungerDelta: Int, waterDelta: Int, happinessDelta: Int, nowMillis: Long = System.currentTimeMillis()): Tamagotchi {
         val newH = (hunger - hungerDelta).coerceIn(0, 100)
