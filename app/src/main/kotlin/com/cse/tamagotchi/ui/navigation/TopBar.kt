@@ -15,7 +15,7 @@ fun HabitGotchiTopBar(coins: Int) {
     TopAppBar(
         title = { Text("HabitGotchi") },
         actions = {
-            Text("Coins: $coins", style = MaterialTheme.typography.bodyLarge)
+            Text("\uD83E\uDE99 Coins: $coins", style = MaterialTheme.typography.bodyLarge)
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent

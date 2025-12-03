@@ -3,7 +3,7 @@ package com.cse.tamagotchi.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // optional light mode colors
-// val Purple80 = Color(0xFFD0BCFF)
+val Purple80 = Color(0xFFD0BCFF)
 // val PurpleGrey80 = Color(0xFFCCC2DC)
 // val Pink80 = Color(0xFFEFB8C8)
 val PastelBlue = Color(0xFFB3EBF2)
@@ -25,6 +25,3 @@ val DestructiveRed = Color(0xFFEC4C4C)
 // "current page" nav bar color
 val HoverGreen = Color(0xFF78EC7A)
 val HoverBlue = Color(0xFF1717DA)
-
-// inventory text color, used in store
-val TextGrey = Color(0xFF808080)

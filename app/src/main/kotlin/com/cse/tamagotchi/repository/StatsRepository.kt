@@ -7,7 +7,6 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlin.math.max
 
 private val Context.statsDataStore: DataStore<Preferences> by preferencesDataStore("stats_prefs")
