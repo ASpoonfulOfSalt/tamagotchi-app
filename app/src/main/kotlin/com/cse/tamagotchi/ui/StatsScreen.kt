@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.cse.tamagotchi.ui.stats.LegendaryRewardDialog
 import com.cse.tamagotchi.ui.stats.StatsBubbleGrid
 import com.cse.tamagotchi.ui.stats.StatsHeader
 import com.cse.tamagotchi.ui.stats.StatsMiniChart
@@ -15,13 +16,23 @@ import com.cse.tamagotchi.ui.stats.StatsProgressRing
 import com.cse.tamagotchi.viewmodel.StatsViewModel
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.max
+
 
 @Composable
 fun StatsScreen(
     viewModel: StatsViewModel
 ) {
+
     val stats by viewModel.uiState.collectAsState()
+
+    var showPopup by remember { mutableStateOf(false) }
+
+    LaunchedEffect(stats.showLegendaryPopup) {
+        if (stats.showLegendaryPopup) {
+            showPopup = true
+        }
+    }
+
 
     // Keep best streak in sync with current streak
     LaunchedEffect(stats.currentStreak, stats.bestStreak) {
@@ -67,11 +78,16 @@ fun StatsScreen(
             max = xpForNextLevel
         )
 
-
         StatsBubbleGrid(
             stats = stats,
             installDateText = installDateText,
             bestStreak = stats.bestStreak
         )
+
+        // Displays the Legendary Reward Popup! Free money.
+        if (showPopup) {
+            LegendaryRewardDialog(onDismiss = { showPopup = false })
+        }
+
     }
 }

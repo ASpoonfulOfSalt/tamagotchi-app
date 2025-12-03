@@ -21,7 +21,13 @@ class StatsRepository(private val context: Context) {
         val BEST_STREAK = intPreferencesKey("best_streak")
         val DAYS_USED = intPreferencesKey("days_used")
         val LAST_OPENED_DAY = longPreferencesKey("last_opened_day")
+
+        // NEW:
+        val LEGENDARY_REWARD_CLAIMED = booleanPreferencesKey("legendary_reward_claimed")
     }
+
+    val legendaryRewardClaimed: Flow<Boolean> = context.statsDataStore.data
+        .map { it[Keys.LEGENDARY_REWARD_CLAIMED] ?: false }
 
     val installDate: Flow<Long> = context.statsDataStore.data
         .map { it[Keys.INSTALL_DATE] ?: 0L }
@@ -101,5 +107,11 @@ class StatsRepository(private val context: Context) {
             set(java.util.Calendar.MILLISECOND, 0)
         }
         return cal.timeInMillis
+    }
+
+    suspend fun setLegendaryRewardClaimed() {
+        context.statsDataStore.edit {
+            it[Keys.LEGENDARY_REWARD_CLAIMED] = true
+        }
     }
 }

@@ -17,7 +17,8 @@ data class StatsUiState(
     val currentStreak: Int = 0,
     val level: Int = 1,
     val xp: Int = 0,
-    val hatCount: Int = 0
+    val hatCount: Int = 0,
+    val showLegendaryPopup: Boolean = false
 )
 
 private data class BaseStats(
@@ -39,6 +40,7 @@ class StatsViewModel(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(StatsUiState())
+    private val _legendaryShown = MutableStateFlow(false)
     val uiState: StateFlow<StatsUiState> = _uiState.asStateFlow()
 
     init {
@@ -46,7 +48,6 @@ class StatsViewModel(
             statsRepository.initializeInstallDateIfNeeded()
             statsRepository.recordDailyUsageIfNewDay()
 
-            // FIXED: combine using array
             val baseFlow = combine(
                 statsRepository.installDate,
                 statsRepository.totalTasksCompleted,
@@ -55,7 +56,8 @@ class StatsViewModel(
                 statsRepository.bestStreak,
                 statsRepository.daysUsed,
                 userPrefs.userLevel,
-                userPrefs.userXp
+                userPrefs.userXp,
+                statsRepository.legendaryRewardClaimed
             ) { values ->
 
                 BaseStats(
@@ -70,13 +72,31 @@ class StatsViewModel(
                 )
             }
 
+
             combine(
                 baseFlow,
                 storeRepository.getPurchasedItems(),
-                tamagotchiRepository.tamagotchiFlow
-            ) { base, items, tama ->
+                tamagotchiRepository.tamagotchiFlow,
+                statsRepository.legendaryRewardClaimed
+            ) { base, items, tama, legendaryClaimed ->
 
                 val hatCount = items.count { it.isHat() && it.quantity > 0 }
+
+                val shouldUnlockLegendary = tama.streakCount >= 30 && !legendaryClaimed
+
+                // reward logic (only runs once)
+                if (shouldUnlockLegendary && !_legendaryShown.value) {
+                    _legendaryShown.value = true
+
+                    viewModelScope.launch {
+                        // 1) Give player 1000 coins
+                        val updated = tama.addCurrency(1000)
+                        tamagotchiRepository.saveTamagotchi(updated)
+
+                        // 2) Mark reward claimed so it never repeats
+                        statsRepository.setLegendaryRewardClaimed()
+                    }
+                }
 
                 StatsUiState(
                     installDate = base.installDate,
@@ -88,11 +108,13 @@ class StatsViewModel(
                     level = base.level,
                     xp = base.xp,
                     hatCount = hatCount,
-                    currentStreak = tama.streakCount
+                    currentStreak = tama.streakCount,
+                    showLegendaryPopup = shouldUnlockLegendary && !_legendaryShown.value
                 )
             }.collect {
                 _uiState.value = it
             }
+
         }
     }
 
