@@ -27,9 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.cse.tamagotchi.ui.theme.DarkModeGreen
+import com.cse.tamagotchi.ui.theme.Purple80
 import com.cse.tamagotchi.ui.theme.DarkGrey
 import com.cse.tamagotchi.ui.theme.DestructiveRed
-import com.cse.tamagotchi.ui.theme.LightModeGreen
 import com.cse.tamagotchi.ui.theme.PureWhite
 import com.cse.tamagotchi.viewmodel.SettingsViewModel
 
@@ -40,7 +40,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
     val view = LocalView.current
 
     val greenButtonColors = ButtonDefaults.buttonColors(
-        containerColor = if (isDarkMode) DarkModeGreen else LightModeGreen,
+        containerColor = if (isDarkMode) DarkModeGreen else Purple80,
         contentColor = if (isDarkMode) PureWhite else DarkGrey
     )
 
