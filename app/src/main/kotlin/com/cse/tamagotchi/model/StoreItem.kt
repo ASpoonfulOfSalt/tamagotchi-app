@@ -9,5 +9,6 @@ data class StoreItem(
     val name: String,
     val price: Int,
     @DrawableRes val iconRes: Int,
-    val quantity: Int = 1
+    val quantity: Int = 1,
+    val description: String,
 )
