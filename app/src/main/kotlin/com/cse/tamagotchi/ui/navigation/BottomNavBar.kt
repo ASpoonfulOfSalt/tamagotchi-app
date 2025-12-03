@@ -18,9 +18,9 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Backpack
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Task
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import kotlinx.coroutines.CoroutineScope
@@ -36,10 +36,10 @@ fun HabitGotchiBottomNav(
         containerColor = Color.Transparent
     ) {
         val items = listOf(
+            "Stats" to Icons.Filled.CalendarMonth,
             "Store" to Icons.Filled.ShoppingCart,
-            "Inventory" to Icons.Filled.Backpack,
             "Home" to Icons.Filled.Home,
-            "Daily" to Icons.AutoMirrored.Filled.List,
+            "Daily" to Icons.Filled.Task,
             "Settings" to Icons.Filled.Settings
         )
         items.forEachIndexed { index, (label, icon) ->

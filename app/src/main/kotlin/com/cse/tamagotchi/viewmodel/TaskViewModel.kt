@@ -3,6 +3,7 @@ package com.cse.tamagotchi.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cse.tamagotchi.model.Task
+import com.cse.tamagotchi.repository.StatsRepository
 import com.cse.tamagotchi.repository.TamagotchiRepository
 import com.cse.tamagotchi.repository.TaskRepository
 import com.cse.tamagotchi.repository.UserPreferencesRepository
@@ -25,7 +26,8 @@ data class TaskUiState(
 class TaskViewModel(
     private val taskRepository: TaskRepository,
     private val tamagotchiRepository: TamagotchiRepository,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val statsRepository: StatsRepository // <-- new dependency
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TaskUiState())
@@ -93,19 +95,29 @@ class TaskViewModel(
 
     fun completeTask(taskId: String) {
         viewModelScope.launch {
+            // completeTask returns Task?; capture it
             val completedTask = taskRepository.completeTask(taskId)
-            if (completedTask != null) {
-                val tamagotchi = tamagotchiRepository.tamagotchiFlow.first()
-                val updatedTamagotchi = tamagotchi.addCurrency(completedTask.currencyReward)
-                tamagotchiRepository.saveTamagotchi(updatedTamagotchi)
 
-                val levelsGained = userPreferencesRepository.addXp(completedTask.xpReward)
-                if (levelsGained > 0) {
-                    val reward = levelsGained * 50
-                    val newTamagotchi = tamagotchiRepository.tamagotchiFlow.first().addCurrency(reward)
-                    tamagotchiRepository.saveTamagotchi(newTamagotchi)
-                    _uiState.update { it.copy(levelUpReward = reward) }
-                }
+            // If no task or task was already completed, bail out
+            if (completedTask == null) return@launch
+
+            // Update stats repository (record task + coins) BEFORE mutating Tamagotchi
+            // StatsRepository functions are suspend; call them in this coroutine
+            statsRepository.recordTaskCompleted()
+            statsRepository.recordCoinsEarned(completedTask.currencyReward)
+
+            // Update tamagotchi currency
+            val tamagotchi = tamagotchiRepository.tamagotchiFlow.first()
+            val updatedTamagotchi = tamagotchi.addCurrency(completedTask.currencyReward)
+            tamagotchiRepository.saveTamagotchi(updatedTamagotchi)
+
+            // XP / level handling (unchanged)
+            val levelsGained = userPreferencesRepository.addXp(completedTask.xpReward)
+            if (levelsGained > 0) {
+                val reward = levelsGained * 50
+                val newTamagotchi = tamagotchiRepository.tamagotchiFlow.first().addCurrency(reward)
+                tamagotchiRepository.saveTamagotchi(newTamagotchi)
+                _uiState.update { it.copy(levelUpReward = reward) }
             }
         }
     }
