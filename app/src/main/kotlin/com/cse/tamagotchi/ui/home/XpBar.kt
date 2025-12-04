@@ -56,11 +56,11 @@ fun XpBar(xp: Int, level: Int, modifier: Modifier = Modifier) {
         ) {
             Text(
                 text = "Level: $level",
-                color = MaterialTheme.colorScheme.onBackground   // FIX
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = "$xp / $xpNeeded XP",
-                color = MaterialTheme.colorScheme.onBackground   // FIX
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
 

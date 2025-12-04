@@ -112,9 +112,23 @@ fun HomeScreen(
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
             } else {
                 Column(
-                    Modifier.align(Alignment.Center).padding(16.dp).offset(y = 55.dp),
+                    Modifier
+                        .align(Alignment.Center)
+                        .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // PET NAME
+                    Text(
+                        text = uiState.tamagotchi.name,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.clickable { showRename = true }
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    // PET SPRITE AREA
+                    PetDisplay(uiState = uiState)
 
                     // XP BAR + Trivia dropdown
                     XpBarSection(
@@ -131,21 +145,6 @@ fun HomeScreen(
                     )
 
                     Spacer(Modifier.height(16.dp))
-
-                    // PET NAME
-                    Text(
-                        text = uiState.tamagotchi.name,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.clickable { showRename = true }
-                    )
-
-                    Spacer(Modifier.height(8.dp))
-
-                    // PET SPRITE AREA
-                    PetDisplay(uiState = uiState)
-
-                    Spacer(Modifier.height(12.dp))
 
                     // HUNGER / WATER / HAPPINESS
                     PetStatsSection(uiState.tamagotchi)
