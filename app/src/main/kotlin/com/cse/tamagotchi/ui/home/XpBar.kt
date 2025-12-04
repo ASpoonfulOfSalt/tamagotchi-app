@@ -3,6 +3,7 @@ package com.cse.tamagotchi.ui.home
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,19 +57,22 @@ fun XpBar(xp: Int, level: Int, modifier: Modifier = Modifier) {
         ) {
             Text(
                 text = "Level: $level",
-                color = MaterialTheme.colorScheme.onBackground   // FIX
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = "$xp / $xpNeeded XP",
-                color = MaterialTheme.colorScheme.onBackground   // FIX
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
 
         Spacer(Modifier.height(4.dp))
 
         LinearProgressIndicator(
-            progress = progress,
-            modifier = Modifier.fillMaxWidth()
+            progress = { progress },
+            modifier = Modifier.fillMaxWidth(),
+            color = ProgressIndicatorDefaults.linearTrackColor,
+            trackColor = ProgressIndicatorDefaults.linearColor,
+            strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
         )
     }
 }
