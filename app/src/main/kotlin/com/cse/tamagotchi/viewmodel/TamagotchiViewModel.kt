@@ -91,7 +91,12 @@ class TamagotchiViewModel(
     }
 
 
-    fun feedPet() = useItem("Apple", "Yummy!") { it.feed() }
+    fun feedPet(itemName: String = "Apple") {
+        when (itemName) {
+            "Cake" -> useItem("Cake", "Delicious!", transform = { it.feed(amount = 100, maxLimit = 150) })
+            else -> useItem("Apple", "Yummy!", transform = { it.feed(amount = 15, maxLimit = 100) })
+        }
+    }
 
     fun hydratePet() = useItem("Water", "Refreshing!") { it.hydrate() }
 

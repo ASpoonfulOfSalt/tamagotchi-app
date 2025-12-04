@@ -108,6 +108,9 @@ fun HomeScreen(
     
     var showXpMenu by remember { mutableStateOf(false) }
     var showTriviaGame by remember { mutableStateOf(false) }
+
+    // Food selection menu state
+    var showFoodMenu by remember { mutableStateOf(false) }
     
     if (showTriviaGame) {
         TriviaMinigameDialog(
@@ -268,7 +271,47 @@ fun HomeScreen(
                     Spacer(Modifier.height(16.dp))
                     val buttonColors = ButtonDefaults.buttonColors(containerColor = if (isDarkMode) DarkModeGreen else LightModeGreen, contentColor = if (isDarkMode) PureWhite else DarkGrey)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = { tamagotchiViewModel.feedPet() }, colors = buttonColors) { Text("Feed") }
+                        // Feed Button with Dropdown Logic
+                        Box {
+                            Button(
+                                onClick = { 
+                                    val hasApple = tamagotchiUiState.inventory.any { it.name == "Apple" && it.quantity > 0 }
+                                    val hasCake = tamagotchiUiState.inventory.any { it.name == "Cake" && it.quantity > 0 }
+                                    
+                                    if (hasApple && hasCake) {
+                                        showFoodMenu = true
+                                    } else if (hasCake) {
+                                        tamagotchiViewModel.feedPet("Cake")
+                                    } else {
+                                        // Default to Apple (works even if 0 to show error)
+                                        tamagotchiViewModel.feedPet("Apple") 
+                                    }
+                                }, 
+                                colors = buttonColors
+                            ) { 
+                                Text("Feed") 
+                            }
+                            DropdownMenu(
+                                expanded = showFoodMenu,
+                                onDismissRequest = { showFoodMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("Apple") },
+                                    onClick = {
+                                        showFoodMenu = false
+                                        tamagotchiViewModel.feedPet("Apple")
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("Cake") },
+                                    onClick = {
+                                        showFoodMenu = false
+                                        tamagotchiViewModel.feedPet("Cake")
+                                    }
+                                )
+                            }
+                        }
+                        
                         Button(onClick = { tamagotchiViewModel.hydratePet() }, colors = buttonColors) { Text("Water") }
                         Button(onClick = { tamagotchiViewModel.playPet() }, colors = buttonColors) { Text("Play") }
                     }

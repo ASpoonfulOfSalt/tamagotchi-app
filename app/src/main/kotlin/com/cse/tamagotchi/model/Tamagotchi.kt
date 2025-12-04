@@ -32,8 +32,8 @@ data class Tamagotchi(
             }
         }
 
-    fun feed(amount: Int = 15): Tamagotchi =
-        copy(hunger = (hunger + amount).coerceAtMost(100), lastUpdatedMillis = System.currentTimeMillis())
+    fun feed(amount: Int = 15, maxLimit: Int = 100): Tamagotchi =
+        copy(hunger = (hunger + amount).coerceAtMost(maxLimit), lastUpdatedMillis = System.currentTimeMillis())
 
     fun hydrate(amount: Int = 15): Tamagotchi =
         copy(water = (water + amount).coerceAtMost(100), lastUpdatedMillis = System.currentTimeMillis())
