@@ -104,7 +104,7 @@ fun AppNavRoot() {
                         2 -> HomeScreen(
                             tamagotchiViewModel = tamagotchiViewModel,
                             isDarkMode = isDarkMode,
-                            userPreferencesRepository = userPrefs,
+                            userPrefs = userPrefs,
                             taskViewModel = taskViewModel
                         )
 
