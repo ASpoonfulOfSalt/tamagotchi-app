@@ -64,4 +64,19 @@ class SettingsViewModel(
             resetPetStats()
         }
     }
+
+    fun makeMeABajillionaire() {
+        viewModelScope.launch {
+            val tamagotchi = tamagotchiRepository.tamagotchiFlow.stateIn(
+                viewModelScope, SharingStarted.Eagerly, null
+            ).value ?: Tamagotchi()
+
+            // Pick a value that is big but safe for Int (Room stores currency)
+            val million = 1_000_000
+            val newTamagotchi = tamagotchi.addCurrency(million)
+
+            tamagotchiRepository.saveTamagotchi(newTamagotchi)
+        }
+    }
+
 }

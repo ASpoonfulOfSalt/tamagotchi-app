@@ -28,7 +28,9 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.cse.tamagotchi.ui.theme.DarkModeGreen
 import com.cse.tamagotchi.ui.theme.Purple80
+import com.cse.tamagotchi.ui.theme.Purple40
 import com.cse.tamagotchi.ui.theme.DarkGrey
+import com.cse.tamagotchi.ui.theme.VeryPink
 import com.cse.tamagotchi.ui.theme.DestructiveRed
 import com.cse.tamagotchi.ui.theme.PureWhite
 import com.cse.tamagotchi.viewmodel.SettingsViewModel
@@ -140,6 +142,23 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
         }
 
         Spacer(Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                view.playSoundEffect(SoundEffectConstants.CLICK)
+                viewModel.makeMeABajillionaire()
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isDarkMode) Purple40 else VeryPink,
+                contentColor = if (isDarkMode) PureWhite else DarkGrey
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Make Me a Bajillionaire 💰 (Testing)")
+        }
+
+        Spacer(Modifier.height(24.dp))
+
 
         Button(
             onClick = {
