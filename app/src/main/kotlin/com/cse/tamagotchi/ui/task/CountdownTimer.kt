@@ -1,4 +1,4 @@
-package com.cse.tamagotchi.task
+package com.cse.tamagotchi.ui.task
 
 import androidx.compose.runtime.*
 import androidx.compose.material3.Text
