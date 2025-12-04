@@ -2,34 +2,77 @@ package com.cse.tamagotchi.audio
 
 import android.content.Context
 import android.media.MediaPlayer
+import com.cse.tamagotchi.R
 import com.cse.tamagotchi.repository.UserPreferencesRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 object BackgroundMusicManager {
     private var mediaPlayer: MediaPlayer? = null
-    private var currentVolume: Float = 0.00f
+    private var currentVolume = 0f
+    private var musicList: List<Int> = emptyList()
+    private var lastPlayedIndex: Int? = null
+
+    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     fun start(context: Context) {
-        if (mediaPlayer == null) {
-            val userPrefs = UserPreferencesRepository(context.applicationContext)
-            CoroutineScope(Dispatchers.Main).launch {
-                val savedVolume = userPrefs.musicVolume.first().coerceIn(0f, 1f)
-                currentVolume = savedVolume
+        if (mediaPlayer != null && mediaPlayer!!.isPlaying) return
 
-                mediaPlayer = MediaPlayer.create(context, com.cse.tamagotchi.R.raw.soft_lofi_bg).apply {
-                    isLooping = true
-                    setVolume(currentVolume, currentVolume) // Set volume **before starting**
-                    start()
-                }
+        scope.launch {
+            // Load user preferences
+            val userPrefs = UserPreferencesRepository(context.applicationContext)
+            currentVolume = userPrefs.musicVolume.first().coerceIn(0f, 1f)
+
+            // Load all music files dynamically from R.raw
+            loadMusicList()
+
+            if (musicList.isEmpty()) {
+                // Fallback to your original song if no music_* files exist
+                musicList = listOf(R.raw.music_soft_lofi_bg_1)
             }
-        } else if (mediaPlayer?.isPlaying == false) {
-            mediaPlayer?.start()
+
+            playRandomSong(context)
         }
     }
 
+    private fun loadMusicList() {
+        val rawClass = R.raw::class.java
+
+        musicList = rawClass.fields
+            .filter { it.name.startsWith("music_") } // Only load files named music_*
+            .map { it.getInt(null) } // Convert reflection field → resource ID
+    }
+
+    private fun playRandomSong(context: Context) {
+        val nextIndex = getNextRandomIndex()
+        lastPlayedIndex = nextIndex
+        val resId = musicList[nextIndex]
+
+        mediaPlayer?.release()
+
+        mediaPlayer = MediaPlayer.create(context, resId).apply {
+            isLooping = false
+            setVolume(currentVolume, currentVolume)
+            setOnCompletionListener {
+                playRandomSong(context) // Auto-queue next song
+            }
+            start()
+        }
+    }
+
+    private fun getNextRandomIndex(): Int {
+        if (musicList.size == 1) return 0
+
+        val last = lastPlayedIndex
+        var index: Int
+
+        do {
+            index = Random.nextInt(musicList.size)
+        } while (index == last)   // Do not repeat same song
+
+        return index
+    }
 
     fun pause() {
         mediaPlayer?.pause()
