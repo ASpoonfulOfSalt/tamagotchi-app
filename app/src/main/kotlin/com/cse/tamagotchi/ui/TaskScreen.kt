@@ -13,9 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
-import com.cse.tamagotchi.task.AddTaskDialog
-import com.cse.tamagotchi.task.CountdownTimer
-import com.cse.tamagotchi.task.TaskItem
+import com.cse.tamagotchi.ui.task.CountdownTimer
+import com.cse.tamagotchi.ui.task.TaskItem
+import com.cse.tamagotchi.ui.task.AddTaskDialog
 import com.cse.tamagotchi.ui.theme.DarkGrey
 import com.cse.tamagotchi.ui.theme.DarkModeGreen
 import com.cse.tamagotchi.ui.theme.LightModeGreen

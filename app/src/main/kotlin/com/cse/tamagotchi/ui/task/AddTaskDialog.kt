@@ -1,9 +1,9 @@
-package com.cse.tamagotchi.task
+package com.cse.tamagotchi.ui.task
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.fillMaxWidth
 import com.cse.tamagotchi.ui.theme.*
 
 @Composable
@@ -17,16 +17,27 @@ fun AddTaskDialog(
 ) {
     if (!isVisible) return
 
+    // Allow letters, digits, and spaces only; cap to 30 chars
+    fun sanitizeInput(input: String): String {
+        val alphanumericOnly = input.filter { it.isLetterOrDigit() || it.isWhitespace() }
+        return alphanumericOnly.take(30)
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Add a New Task") },
         text = {
             OutlinedTextField(
                 value = taskName,
-                onValueChange = onNameChanged,
-                label = { Text("Task Name") },
+                onValueChange = { newValue ->
+                    onNameChanged(sanitizeInput(newValue))
+                },
+                label = { Text("Task Name (Max 30 chars)") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                supportingText = {
+                    Text("${taskName.length}/30")
+                }
             )
         },
         confirmButton = {
