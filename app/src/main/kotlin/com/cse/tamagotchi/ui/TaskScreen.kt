@@ -26,6 +26,14 @@ import com.cse.tamagotchi.viewmodel.TaskViewModel
 fun TaskScreen(viewModel: TaskViewModel, isDarkMode: Boolean) {
     val uiState by viewModel.uiState.collectAsState()
     val view = LocalView.current
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    if (uiState.levelUpReward == -1) {
+        LaunchedEffect(Unit) {
+            snackbarHostState.showSnackbar("You can only add 5 custom tasks per day!")
+            viewModel.onLevelUpRewardShown()
+        }
+    }
 
     var showAddTaskDialog by rememberSaveable { mutableStateOf(false) }
     var taskName by rememberSaveable { mutableStateOf("") }
@@ -48,6 +56,7 @@ fun TaskScreen(viewModel: TaskViewModel, isDarkMode: Boolean) {
 
     // === Main Layout ===
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showAddTaskDialog = true },

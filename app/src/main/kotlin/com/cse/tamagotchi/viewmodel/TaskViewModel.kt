@@ -88,7 +88,28 @@ class TaskViewModel(
 
     fun addTask(taskName: String) {
         viewModelScope.launch {
-            val newTask = Task(title = taskName, isDaily = true, currencyReward = 10)
+
+            // Count only custom tasks added today (not JSON tasks)
+            val todayCustomTasks = _uiState.value.tasks.count { task ->
+                task.description.isBlank() && task.isDaily && task.currencyReward <= 15
+            }
+
+            // Limit reached
+            if (todayCustomTasks >= 5) {
+                _uiState.update { it.copy(levelUpReward = -1) } // reusing reward field as error signal
+                return@launch
+            }
+
+            // Compute diminishing reward
+            val reward = 15 - todayCustomTasks  // 1st → 15, 2nd → 14, ..., 5th → 11
+
+            val newTask = Task(
+                title = taskName,
+                description = "",
+                isDaily = true,
+                currencyReward = reward
+            )
+
             taskRepository.addTask(newTask)
         }
     }

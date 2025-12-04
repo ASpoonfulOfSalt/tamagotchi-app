@@ -23,5 +23,7 @@ data class Task(
     @ColumnInfo(name = "currency_reward")
     val currencyReward: Int = 10,
     @ColumnInfo(name = "xp_reward")
-    val xpReward: Int = 20
+    val xpReward: Int = 20,
+    @ColumnInfo(name = "is_custom")
+    val isCustom: Boolean = false
 )
