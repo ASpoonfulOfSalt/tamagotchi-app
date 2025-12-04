@@ -373,5 +373,205 @@
     "question": "What is the capital of Russia?",
     "options": ["St. Petersburg", "Moscow", "Kiev", "Minsk"],
     "correctIndex": 1
+  },
+  {
+    "question": "What is the largest ocean animal that is NOT a mammal?",
+    "options": ["Great White Shark", "Blue Whale Shark", "Giant Squid", "Manta Ray"],
+    "correctIndex": 1
+  },
+  {
+    "question": "Which country is home to the Great Pyramid of Giza?",
+    "options": ["Mexico", "Egypt", "India", "China"],
+    "correctIndex": 1
+  },
+  {
+    "question": "Which metal is liquid at room temperature?",
+    "options": ["Gold", "Mercury", "Silver", "Lead"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the fastest aquatic animal?",
+    "options": ["Sailfish", "Dolphin", "Swordfish", "Tuna"],
+    "correctIndex": 0
+  },
+  {
+    "question": "What is the tallest type of tree in the world?",
+    "options": ["Redwood", "Oak", "Pine", "Birch"],
+    "correctIndex": 0
+  },
+  {
+    "question": "How many hearts does an octopus have?",
+    "options": ["1", "2", "3", "4"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the main ingredient in bread?",
+    "options": ["Salt", "Milk", "Yeast", "Rice"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which planet spins the fastest?",
+    "options": ["Mars", "Earth", "Jupiter", "Mercury"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which bird cannot fly but can run very fast?",
+    "options": ["Falcon", "Penguin", "Ostrich", "Peacock"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is the longest bone in the human arm?",
+    "options": ["Radius", "Ulna", "Humerus", "Clavicle"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which famous scientist formulated the theory of relativity?",
+    "options": ["Isaac Newton", "Albert Einstein", "Marie Curie", "Niels Bohr"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the primary ingredient in sushi?",
+    "options": ["Rice", "Fish", "Seaweed", "Soy Sauce"],
+    "correctIndex": 0
+  },
+  {
+    "question": "Which continent has the most countries?",
+    "options": ["Asia", "Africa", "Europe", "South America"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the closest star to Earth?",
+    "options": ["Alpha Centauri", "Betelgeuse", "The Sun", "Sirius"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which gas makes up most of the sun?",
+    "options": ["Hydrogen", "Oxygen", "Helium", "Nitrogen"],
+    "correctIndex": 0
+  },
+  {
+    "question": "What is the square root of 64?",
+    "options": ["6", "7", "8", "9"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What kind of animal is a Komodo dragon?",
+    "options": ["Snake", "Lizard", "Amphibian", "Mammal"],
+    "correctIndex": 1
+  },
+  {
+    "question": "Which fruit is known as the 'king of fruits' in Southeast Asia?",
+    "options": ["Mango", "Durian", "Pineapple", "Papaya"],
+    "correctIndex": 1
+  },
+  {
+    "question": "Which city hosted the first modern Olympic Games?",
+    "options": ["Athens", "London", "Paris", "Tokyo"],
+    "correctIndex": 0
+  },
+  {
+    "question": "How many legs does a crab typically have?",
+    "options": ["6", "8", "10", "12"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which animal can regrow its limbs?",
+    "options": ["Dolphin", "Starfish", "Cat", "Eagle"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the name of the galaxy we live in?",
+    "options": ["Andromeda", "Whirlpool", "Sombrero", "Milky Way"],
+    "correctIndex": 3
+  },
+  {
+    "question": "Which country invented pizza?",
+    "options": ["France", "USA", "Italy", "Greece"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What is frozen water called?",
+    "options": ["Steam", "Snow", "Ice", "Frost"],
+    "correctIndex": 2
+  },
+  {
+    "question": "What device measures temperature?",
+    "options": ["Barometer", "Thermometer", "Altimeter", "Speedometer"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the largest internal organ in the human body?",
+    "options": ["Liver", "Heart", "Pancreas", "Lung"],
+    "correctIndex": 0
+  },
+  {
+    "question": "Which sea creature has three hearts?",
+    "options": ["Squid", "Octopus", "Seal", "Shark"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the hottest planet in the solar system?",
+    "options": ["Mercury", "Venus", "Jupiter", "Mars"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the largest type of big cat?",
+    "options": ["Lion", "Jaguar", "Leopard", "Tiger"],
+    "correctIndex": 3
+  },
+  {
+    "question": "Which country invented paper?",
+    "options": ["Egypt", "China", "India", "Greece"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the process by which plants make food?",
+    "options": ["Fermentation", "Respiration", "Photosynthesis", "Metabolism"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which famous ship sank in 1912?",
+    "options": ["Lusitania", "Titanic", "Endeavour", "Mary Rose"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the main language spoken in Brazil?",
+    "options": ["Spanish", "Portuguese", "English", "French"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the name of the fairy in Peter Pan?",
+    "options": ["Silvermist", "Zarina", "Tinker Bell", "Rosetta"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which dinosaur had three horns?",
+    "options": ["Stegosaurus", "Triceratops", "Allosaurus", "Brachiosaurus"],
+    "correctIndex": 1
+  },
+  {
+    "question": "How many colors are in a rainbow?",
+    "options": ["6", "7", "5", "8"],
+    "correctIndex": 1
+  },
+  {
+    "question": "Which animal is the symbol of the United States?",
+    "options": ["Grizzly Bear", "Bald Eagle", "Wolf", "Buffalo"],
+    "correctIndex": 1
+  },
+  {
+    "question": "What is the largest planet in the solar system?",
+    "options": ["Earth", "Saturn", "Jupiter", "Uranus"],
+    "correctIndex": 2
+  },
+  {
+    "question": "Which continent is the Sahara Desert located on?",
+    "options": ["Asia", "Africa", "South America", "Australia"],
+    "correctIndex": 1
+  },
+  {
+    "question": "Which musical instrument has strings and is played with a bow?",
+    "options": ["Flute", "Violin", "Drum", "Saxophone"],
+    "correctIndex": 1
   }
 ]
