@@ -127,16 +127,38 @@ class TamagotchiViewModel(
         }
     }
 
-    private fun useItem(itemName: String, speechMessage: String, onSuccess: (() -> Unit)? = null, transform: (Tamagotchi) -> Tamagotchi) {
+    private fun useItem(
+        itemName: String,
+        speechMessage: String,
+        onSuccess: (() -> Unit)? = null,
+        transform: (Tamagotchi) -> Tamagotchi
+    ) {
         viewModelScope.launch {
             if (_uiState.value.isLoading) return@launch
+
+            val current = _uiState.value.tamagotchi
+
+            // === PREVENT OVER-USING ITEMS WHEN STAT IS FULL ===
+            val isBlocked = when (itemName) {
+                "Apple", "Cake" -> current.hunger >= 98
+                "Water"         -> current.water >= 98
+                "Ball"          -> current.happiness >= 98
+                else            -> false
+            }
+
+            if (isBlocked) {
+                _uiState.update { it.copy(userMessage = "Your pet doesn't need that right now!") }
+                return@launch
+            }
+            // ================================================
 
             val item = _uiState.value.inventory.find { it.name == itemName }
             if (item != null) {
                 storeRepository.useItem(item)
-                val current = _uiState.value.tamagotchi
-                val newT = transform(current)
-                repo.saveTamagotchi(newT)
+
+                val newTamagotchi = transform(current)
+                repo.saveTamagotchi(newTamagotchi)
+
                 showSpeechBubble(speechMessage)
                 onSuccess?.invoke()
             } else {

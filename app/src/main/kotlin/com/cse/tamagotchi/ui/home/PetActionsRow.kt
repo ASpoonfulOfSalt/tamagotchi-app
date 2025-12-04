@@ -18,6 +18,10 @@ fun PetActionsRow(
     onPlay: () -> Unit,
     isDarkMode: Boolean
 ) {
+    val tamagotchi = uiState.tamagotchi
+    val hunger = tamagotchi.hunger
+    val water = tamagotchi.water
+
     val inv = uiState.inventory
     val hasApple = inv.any { it.name == "Apple" && it.quantity > 0 }
     val hasCake = inv.any { it.name == "Cake" && it.quantity > 0 }
@@ -28,26 +32,69 @@ fun PetActionsRow(
     )
 
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+        // -------------------------
+        // FEED BUTTON
+        // -------------------------
         Box {
-            Button(onClick = {
-                if (hasApple && hasCake) onShowFoodMenu()
-                else if (hasCake) onFeed("Cake")
-                else onFeed("Apple")
-            }, colors = colors) {
+            Button(
+                onClick = {
+                    // 🔒 Prevent feeding when hunger basically maxed
+                    if (hunger >= 98) return@Button
+
+                    if (hasApple && hasCake) {
+                        onShowFoodMenu()
+                    } else if (hasCake) {
+                        onFeed("Cake")
+                    } else {
+                        onFeed("Apple")
+                    }
+                },
+                colors = colors
+            ) {
                 Text("Feed")
             }
 
-            DropdownMenu(expanded = showFoodMenu, onDismissRequest = onDismissMenu) {
-                DropdownMenuItem(text = { Text("Apple") }, onClick = {
-                    onDismissMenu(); onFeed("Apple")
-                })
-                DropdownMenuItem(text = { Text("Cake") }, onClick = {
-                    onDismissMenu(); onFeed("Cake")
-                })
+            DropdownMenu(
+                expanded = showFoodMenu,
+                onDismissRequest = onDismissMenu
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Apple") },
+                    onClick = {
+                        onDismissMenu()
+                        if (hunger < 98) onFeed("Apple")
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Cake") },
+                    onClick = {
+                        onDismissMenu()
+                        if (hunger < 98) onFeed("Cake")
+                    }
+                )
             }
         }
 
-        Button(onClick = onWater, colors = colors) { Text("Water") }
-        Button(onClick = onPlay, colors = colors) { Text("Play") }
+        // -------------------------
+        // WATER BUTTON
+        // -------------------------
+        Button(
+            onClick = {
+                // 🔒 Block watering when water level is already high
+                if (water >= 98) return@Button
+                onWater()
+            },
+            colors = colors
+        ) {
+            Text("Water")
+        }
+
+        // -------------------------
+        // PLAY BUTTON (always allowed)
+        // -------------------------
+        Button(onClick = onPlay, colors = colors) {
+            Text("Play")
+        }
     }
 }
