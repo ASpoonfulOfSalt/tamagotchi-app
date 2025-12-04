@@ -1,145 +1,88 @@
 package com.cse.tamagotchi.ui
 
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.res.painterResource
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cse.tamagotchi.R
 import com.cse.tamagotchi.repository.UserPreferencesRepository
-import com.cse.tamagotchi.ui.components.AnimatedPet
-import com.cse.tamagotchi.ui.theme.DarkModeGreen
-import com.cse.tamagotchi.ui.theme.DarkGrey
-import com.cse.tamagotchi.ui.theme.LightModeGreen
-import com.cse.tamagotchi.ui.theme.PureWhite
+import com.cse.tamagotchi.ui.home.*
 import com.cse.tamagotchi.viewmodel.TamagotchiViewModel
 import com.cse.tamagotchi.viewmodel.TaskViewModel
-import java.util.Calendar
-import kotlin.random.Random
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import kotlinx.coroutines.launch
 
 @Composable
-fun produceIsNightState(): State<Boolean> {
-    val isNight = remember { mutableStateOf(false) }
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-
-    val updateTime: () -> Unit = {
-        val calendar = Calendar.getInstance()
-        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-        isNight.value = currentHour >= 21 || currentHour < 9
-    }
-
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                updateTime()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        updateTime()
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-    return isNight
-}
-
-@Composable
-fun SpeechBubble(message: String, modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.size(120.dp, 80.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_thought_bubble),
-            contentDescription = "Thought bubble",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds
-        )
-        Text(
-            text = message,
-            color = Color.Black,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 8.dp, start = 35.dp)
-        )
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 fun HomeScreen(
-    tamagotchiViewModel: TamagotchiViewModel, 
-    isDarkMode: Boolean, 
-    userPreferencesRepository: UserPreferencesRepository, 
+    tamagotchiViewModel: TamagotchiViewModel,
+    isDarkMode: Boolean,
+    userPrefs: UserPreferencesRepository,
     taskViewModel: TaskViewModel
 ) {
-    val tamagotchiUiState by tamagotchiViewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by tamagotchiViewModel.uiState.collectAsStateWithLifecycle()
     val taskUiState by taskViewModel.uiState.collectAsStateWithLifecycle()
-    val tamagotchi = tamagotchiUiState.tamagotchi
-    val snackbarHostState = remember { SnackbarHostState() }
-    var showRenameDialog by rememberSaveable { mutableStateOf(false) }
-    var newName by rememberSaveable { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
 
-    val userXp by userPreferencesRepository.userXp.collectAsState(initial = 0)
-    val userLevel by userPreferencesRepository.userLevel.collectAsState(initial = 1)
-    val coroutineScope = rememberCoroutineScope()
+    val xp by userPrefs.userXp.collectAsState(initial = 0)
+    val level by userPrefs.userLevel.collectAsState(initial = 1)
 
-    var showConfetti by remember { mutableStateOf(false) }
-    
-    var showXpMenu by remember { mutableStateOf(false) }
-    var showTriviaGame by remember { mutableStateOf(false) }
+    val snackbar = remember { SnackbarHostState() }
 
-    // Food selection menu state
+    var showRename by rememberSaveable { mutableStateOf(false) }
     var showFoodMenu by remember { mutableStateOf(false) }
-    
-    if (showTriviaGame) {
-        TriviaMinigameDialog(
-            onDismiss = { showTriviaGame = false },
-            onGameFinished = { correctCount ->
-                showTriviaGame = false
-                var xpEarned = correctCount * 10 // 10 XP per correct answer
-                var message = "You earned $xpEarned XP!"
-                
-                // Perfection Bonus
-                if (correctCount == 5) {
-                    xpEarned += 50
-                    message = "Perfect score! +50 Bonus XP! You earned $xpEarned XP!"
-                }
-                
-                coroutineScope.launch {
-                    userPreferencesRepository.addXp(xpEarned)
-                    snackbarHostState.showSnackbar(message)
-                }
+    var showXpMenu by remember { mutableStateOf(false) }
+    var showTrivia by remember { mutableStateOf(false) }
+    var showConfetti by remember { mutableStateOf(false) }
+
+    val isNight by produceIsNightState()
+
+    // Listen for streak XP reward
+    LaunchedEffect(taskUiState.levelUpReward) {
+        if (taskUiState.levelUpReward > 0) showConfetti = true
+    }
+
+    // Pet message (snackbar)
+    LaunchedEffect(uiState.userMessage) {
+        uiState.userMessage?.let {
+            snackbar.showSnackbar(it)
+            tamagotchiViewModel.userMessageShown()
+        }
+    }
+
+    // Trivia result handler
+    if (showTrivia) {
+        TriviaMenuDialog(
+            onDismiss = { showTrivia = false },
+            onFinish = { correct ->
+                showTrivia = false
+                var xpEarn = correct * 10
+                if (correct == 5) xpEarn += 50
+                scope.launch { userPrefs.addXp(xpEarn) }
             }
         )
     }
 
-    LaunchedEffect(taskUiState.levelUpReward) {
-        if (taskUiState.levelUpReward > 0) {
-            showConfetti = true
-        }
+    // Rename dialog
+    if (showRename) {
+        RenamePetDialog(
+            onDismiss = { showRename = false },
+            onConfirm = { name ->
+                tamagotchiViewModel.renamePet(name)
+                showRename = false
+            }
+        )
     }
 
+    // Level up rewards
     if (taskUiState.levelUpReward > 0) {
         LevelUpDialog(
             reward = taskUiState.levelUpReward,
@@ -147,278 +90,90 @@ fun HomeScreen(
         )
     }
 
-    val isNight by produceIsNightState()
-
-    LaunchedEffect(tamagotchiUiState.userMessage) {
-        tamagotchiUiState.userMessage?.let {
-            snackbarHostState.showSnackbar(it)
-            tamagotchiViewModel.userMessageShown()
-        }
-    }
-
-    if (showRenameDialog) {
-        AlertDialog(
-            onDismissRequest = { showRenameDialog = false },
-            title = { Text("Rename Pet") },
-            text = {
-                OutlinedTextField(
-                    value = newName,
-                    onValueChange = { newName = it },
-                    label = { Text("New Name") },
-                    singleLine = true
-                )
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        if (newName.isNotBlank()) {
-                            tamagotchiViewModel.renamePet(newName)
-                            showRenameDialog = false
-                            newName = ""
-                        }
-                    }
-                ) { Text("Save") }
-            },
-            dismissButton = { Button(onClick = { showRenameDialog = false }) { Text("Cancel") } }
-        )
-    }
-
     Scaffold(
-        containerColor = Color.Transparent,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) { data ->
-            Snackbar(snackbarData = data, containerColor = MaterialTheme.colorScheme.surfaceVariant, contentColor = MaterialTheme.colorScheme.onSurfaceVariant)
-        } }
+        snackbarHost = { SnackbarHost(snackbar) },
+        containerColor = Color.Transparent
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
-            Image(painter = painterResource(id = if (isNight) R.drawable.ic_night_moon else R.drawable.ic_day_sun), contentDescription = null, modifier = Modifier.padding(24.dp).size(115.dp).align(Alignment.TopEnd))
-            Image(painter = painterResource(id = if (isNight) R.drawable.ic_night_stars else R.drawable.ic_day_clouds), contentDescription = null, modifier = Modifier.padding(24.dp).size(110.dp).align(Alignment.TopStart))
+        Box(Modifier.fillMaxSize().padding(padding)) {
 
-            if (tamagotchiUiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            // Background icons
+            Image(
+                painter = painterResource(id = if (isNight) R.drawable.ic_night_moon else R.drawable.ic_day_sun),
+                contentDescription = null,
+                modifier = Modifier.align(Alignment.TopEnd).padding(24.dp).size(115.dp)
+            )
+            Image(
+                painter = painterResource(id = if (isNight) R.drawable.ic_night_stars else R.drawable.ic_day_clouds),
+                contentDescription = null,
+                modifier = Modifier.align(Alignment.TopStart).padding(24.dp).size(110.dp)
+            )
+
+            if (uiState.isLoading) {
+                CircularProgressIndicator(Modifier.align(Alignment.Center))
             } else {
                 Column(
-                    modifier = Modifier.align(Alignment.Center).padding(16.dp).offset(y = 55.dp),
+                    Modifier.align(Alignment.Center).padding(16.dp).offset(y = 55.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Box(modifier = Modifier.fillMaxWidth(0.8f).wrapContentSize(Alignment.TopStart)) {
-                        XpBar(
-                            xp = userXp, 
-                            level = userLevel, 
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { showXpMenu = true }
-                        )
-                        DropdownMenu(
-                            expanded = showXpMenu,
-                            onDismissRequest = { showXpMenu = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text("Use Book for Minigame") },
-                                onClick = {
-                                    showXpMenu = false
-                                    tamagotchiViewModel.readBook(
-                                        onSuccess = {
-                                            showTriviaGame = true
-                                        }
-                                    )
-                                }
-                            )
-                        }
-                    }
-                    Spacer(Modifier.height(16.dp))
-                    Text(tamagotchi.name, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.clickable { showRenameDialog = true })
-                    Spacer(Modifier.height(8.dp))
-                    
-                    // Pet Box Container
-                    Box(contentAlignment = Alignment.TopCenter) {
-                        Crossfade(targetState = tamagotchi.expression, label = "pet-expression") { expression ->
-                            AnimatedPet(
-                                expression = expression,
-                                modifier = Modifier.size(160.dp),
-                                contentDescription = "Tamagotchi Expression"
-                            )
-                        }
 
-                        // Hat Layer
-                        tamagotchi.currentHat?.let { hat ->
-                            Image(
-                                painter = painterResource(id = hat.drawableRes),
-                                contentDescription = "Hat",
-                                modifier = Modifier
-                                    .size(80.dp) // smaller hat sizes. adjust as needed.
-                                    .offset(y = hat.yOffset.dp) // check y-direction of hat
-                                    .offset(x = hat.xOffset.dp) // check x-direction of hat
-
-                            )
-                        }
-
-                        tamagotchiUiState.speechBubbleMessage?.let { message ->
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .offset(x = 60.dp, y = (-20).dp)
-                            ) {
-                                SpeechBubble(message = message)
+                    // XP BAR + Trivia dropdown
+                    XpBarSection(
+                        level = level,
+                        xp = xp,
+                        showXpMenu = showXpMenu,
+                        onXpMenuClick = { showXpMenu = true },
+                        onDismissXpMenu = { showXpMenu = false },
+                        onPlayTrivia = {
+                            tamagotchiViewModel.readBook {
+                                showTrivia = true
                             }
                         }
-                    }
+                    )
 
+                    Spacer(Modifier.height(16.dp))
+
+                    // PET NAME
+                    Text(
+                        text = uiState.tamagotchi.name,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.clickable { showRename = true }
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    // PET SPRITE AREA
+                    PetDisplay(uiState = uiState)
 
                     Spacer(Modifier.height(12.dp))
-                    Text("Hunger: ${tamagotchi.hunger}", color = MaterialTheme.colorScheme.onBackground)
-                    Text("Water: ${tamagotchi.water}", color = MaterialTheme.colorScheme.onBackground)
-                    Text("Happiness: ${tamagotchi.happiness}", color = MaterialTheme.colorScheme.onBackground)
+
+                    // HUNGER / WATER / HAPPINESS
+                    PetStatsSection(uiState.tamagotchi)
+
                     Spacer(Modifier.height(16.dp))
-                    val buttonColors = ButtonDefaults.buttonColors(containerColor = if (isDarkMode) DarkModeGreen else LightModeGreen, contentColor = if (isDarkMode) PureWhite else DarkGrey)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        // Feed Button with Dropdown Logic
-                        Box {
-                            Button(
-                                onClick = { 
-                                    val hasApple = tamagotchiUiState.inventory.any { it.name == "Apple" && it.quantity > 0 }
-                                    val hasCake = tamagotchiUiState.inventory.any { it.name == "Cake" && it.quantity > 0 }
-                                    
-                                    if (hasApple && hasCake) {
-                                        showFoodMenu = true
-                                    } else if (hasCake) {
-                                        tamagotchiViewModel.feedPet("Cake")
-                                    } else {
-                                        // Default to Apple (works even if 0 to show error)
-                                        tamagotchiViewModel.feedPet("Apple") 
-                                    }
-                                }, 
-                                colors = buttonColors
-                            ) { 
-                                Text("Feed") 
-                            }
-                            DropdownMenu(
-                                expanded = showFoodMenu,
-                                onDismissRequest = { showFoodMenu = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text("Apple") },
-                                    onClick = {
-                                        showFoodMenu = false
-                                        tamagotchiViewModel.feedPet("Apple")
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("Cake") },
-                                    onClick = {
-                                        showFoodMenu = false
-                                        tamagotchiViewModel.feedPet("Cake")
-                                    }
-                                )
-                            }
-                        }
-                        
-                        Button(onClick = { tamagotchiViewModel.hydratePet() }, colors = buttonColors) { Text("Water") }
-                        Button(onClick = { tamagotchiViewModel.playPet() }, colors = buttonColors) { Text("Play") }
-                    }
+
+                    // FEED / WATER / PLAY BUTTONS
+                    PetActionsRow(
+                        uiState = uiState,
+                        showFoodMenu = showFoodMenu,
+                        onShowFoodMenu = { showFoodMenu = true },
+                        onDismissMenu = { showFoodMenu = false },
+                        onFeed = { food -> tamagotchiViewModel.feedPet(food) },
+                        onWater = { tamagotchiViewModel.hydratePet() },
+                        onPlay = { tamagotchiViewModel.playPet() },
+                        isDarkMode = isDarkMode
+                    )
+
                     Spacer(Modifier.height(24.dp))
-                    Text("🔥 Daily Streak: ${tamagotchi.streakCount}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
+
+                    // STREAK
+                    StreakDisplay(uiState.tamagotchi)
                 }
 
                 if (showConfetti) {
-                    LevelUpConfetti(modifier = Modifier.fillMaxSize()) { showConfetti = false }
+                    LevelUpConfetti { showConfetti = false }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun LevelUpDialog(reward: Int, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Congrats!") },
-        text = { Text("You leveled up! You received $reward coins!") },
-        confirmButton = { Button(onClick = onDismiss) { Text("Awesome!") } }
-    )
-}
-
-@Composable
-fun XpBar(xp: Int, level: Int, modifier: Modifier = Modifier) {
-    val xpForNextLevel = 100 * level
-    val progress = xp.toFloat() / xpForNextLevel.toFloat()
-
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Level: $level", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
-            Text("$xp / $xpForNextLevel XP", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onBackground)
-        }
-        Spacer(Modifier.height(4.dp))
-        LinearProgressIndicator(
-        progress = { progress },
-        modifier = Modifier.fillMaxWidth(),
-        color = ProgressIndicatorDefaults.linearColor,
-        trackColor = ProgressIndicatorDefaults.linearTrackColor,
-        strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
-        )
-    }
-}
-
-@Composable
-fun LevelUpConfetti(modifier: Modifier = Modifier, onAnimationFinished: () -> Unit) {
-    var animStarted by remember { mutableStateOf(false) }
-    val particleCount = 150
-    val particles = remember { List(particleCount) { ConfettiParticle() } }
-
-    val animationProgress by animateFloatAsState(
-        targetValue = if (animStarted) 1f else 0f,
-        animationSpec = tween(durationMillis = 3000),
-        label = "confetti",
-        finishedListener = { onAnimationFinished() }
-    )
-
-    LaunchedEffect(Unit) { animStarted = true }
-
-    Canvas(modifier = modifier) {
-        val canvasWidth = size.width
-        val canvasHeight = size.height
-        for (particle in particles) {
-            val (offset, alpha, rotation) = particle.update(animationProgress, canvasWidth, canvasHeight)
-            if (alpha > 0) {
-                rotate(degrees = rotation, pivot = offset) {
-                    drawRect(
-                        color = particle.color,
-                        topLeft = offset,
-                        size = particle.size,
-                        alpha = alpha
-                    )
-                }
-            }
-        }
-    }
-}
-
-data class ConfettiParticle(
-    val color: Color,
-    val startX: Float,
-    val startY: Float,
-    val velocityX: Float,
-    val velocityY: Float,
-    val rotationSpeed: Float,
-    val size: androidx.compose.ui.geometry.Size
-) {
-    constructor() : this(
-        color = Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat(), alpha = 1f),
-        startX = Random.nextFloat(),
-        startY = Random.nextFloat() * -0.2f, // Start above the screen
-        velocityX = Random.nextFloat() * 200 - 100, // Horizontal movement
-        velocityY = Random.nextFloat() * 300 + 400, // Downward speed
-        rotationSpeed = Random.nextFloat() * 720 - 360, // Spin
-        size = androidx.compose.ui.geometry.Size(width = Random.nextFloat() * 20 + 15, height = Random.nextFloat() * 10 + 10)
-    )
-
-    fun update(progress: Float, canvasWidth: Float, canvasHeight: Float): Triple<Offset, Float, Float> {
-        val time = progress * 2.5f
-        val newX = startX * canvasWidth + velocityX * time
-        val newY = startY * canvasHeight + velocityY * time
-
-        val alpha = (1f - progress).coerceIn(0f, 1f)
-        val rotation = rotationSpeed * time
-
-        return Triple(Offset(newX, newY), alpha, rotation)
     }
 }

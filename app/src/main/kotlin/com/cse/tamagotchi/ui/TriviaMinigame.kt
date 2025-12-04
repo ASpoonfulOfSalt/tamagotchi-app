@@ -147,7 +147,7 @@ fun TriviaMinigameDialog(
                                         Text(
                                             text = "Correct Answer: ${item.correctAnswer}",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.primary
+                                            color = MaterialTheme.colorScheme.onBackground
                                         )
                                     }
                                 }
@@ -158,7 +158,7 @@ fun TriviaMinigameDialog(
                         Text(
                             text = "Perfect Score! Well done!",
                             style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         Spacer(modifier = Modifier.weight(1f))
                     }
@@ -173,7 +173,7 @@ fun TriviaMinigameDialog(
                     Text(
                         text = "Question ${currentQuestionIndex + 1} / ${questions.size}",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                     // Progress Indicator
                     LinearProgressIndicator(
@@ -256,7 +256,10 @@ fun TriviaMinigameDialog(
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     TextButton(onClick = { showExitConfirmation = true }) {
-                         Text("Cancel")
+                         Text(
+                             text = "Cancel",
+                             color = MaterialTheme.colorScheme.onBackground
+                         )
                     }
                 }
             }
